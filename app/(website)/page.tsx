@@ -1,8 +1,12 @@
+import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+    <div>
+      <Navbar />
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      
       <h1>Welcome to the Home Page</h1>
       <p>Click the button below to go to the login page.</p>
       <Link href="/main/login">
@@ -11,5 +15,8 @@ export default function Home() {
         </button>
       </Link>
     </div>
+
+    </div>
+    
   );
 }

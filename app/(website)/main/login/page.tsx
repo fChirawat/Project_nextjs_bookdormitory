@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 export default function Login() {
   return (
     <>
+<<<<<<< HEAD
       {/* Navbar */}
       <Navbar />
 
@@ -104,6 +105,12 @@ export default function Login() {
           </form>
         </div>
       </div>
+=======
+    <div>
+      
+      <h5>Login ของ คนซื้อ</h5>
+    </div>
+>>>>>>> b0f256195fdd7fdcd93574b95791047bab0c9b5e
     </>
   );
 }
