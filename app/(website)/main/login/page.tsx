@@ -1,9 +1,9 @@
 export default function Login() {
-    return (
-      <>
-      <div>
-        <h5>หน้าหลัก V1</h5>
-      </div>
-      </>
-    );
-  }
+  return (
+    <>
+    <div>
+      <h5>Login ของ คนซื้อ</h5>
+    </div>
+    </>
+  );
+}
