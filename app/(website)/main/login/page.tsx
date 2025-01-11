@@ -3,8 +3,6 @@ import Navbar from "@/components/Navbar";
 export default function Login() {
   return (
     <>
-<<<<<<< HEAD
-      {/* Navbar */}
       <Navbar />
 
       {/* Login Form */}
