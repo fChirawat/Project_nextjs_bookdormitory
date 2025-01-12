@@ -1,11 +1,9 @@
-import Navbar from "@/components/Navbar";
+import NavReg from "@/components/NavReg";
 
 export default function Login() {
   return (
-    <>
-<<<<<<< HEAD
-      {/* Navbar */}
-      <Navbar />
+    <>     
+      <NavReg />
 
       {/* Login Form */}
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -110,7 +108,7 @@ export default function Login() {
       
       <h5>Login ของ คนซื้อ</h5>
     </div>
->>>>>>> b0f256195fdd7fdcd93574b95791047bab0c9b5e
+
     </>
   );
 }
