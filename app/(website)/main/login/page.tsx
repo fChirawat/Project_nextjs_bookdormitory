@@ -2,8 +2,13 @@ import NavReg from "@/components/NavReg";
 
 export default function Login() {
   return (
+<<<<<<< HEAD
     <>     
       <NavReg />
+=======
+    <>
+      <Navbar />
+>>>>>>> 38d951e97954202246e712a65864404b869a1754
 
       {/* Login Form */}
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
