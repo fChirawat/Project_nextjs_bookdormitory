@@ -126,7 +126,6 @@ export default function Conframsell() {
               <textarea
                 id="address"
                 name="address"
-                rows="4"
                 placeholder="ระบุที่อยู่"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
               ></textarea>
