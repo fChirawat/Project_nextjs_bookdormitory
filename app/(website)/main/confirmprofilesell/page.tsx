@@ -1,9 +1,11 @@
-import NavReg from "@/components/NavReg";
+import Navconfile from "@/components/Navconfile";
+
 
 export default function Conframsell() {
   return (
-    <>
-      <NavReg />
+  <>
+      <Navconfile />
+
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
@@ -38,7 +40,7 @@ export default function Conframsell() {
                 id="fullName"
                 name="fullName"
                 placeholder="ระบุชื่อ-นามสกุล"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
@@ -56,7 +58,7 @@ export default function Conframsell() {
                 id="nickname"
                 name="nickname"
                 placeholder="ชื่อเล่น"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
@@ -74,7 +76,7 @@ export default function Conframsell() {
                 id="email"
                 name="email"
                 placeholder="Email"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
@@ -92,7 +94,7 @@ export default function Conframsell() {
                 id="phoneNumber"
                 name="phoneNumber"
                 placeholder="เบอร์โทรศัพท์"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
@@ -110,7 +112,7 @@ export default function Conframsell() {
                 id="contactInfo"
                 name="contactInfo"
                 placeholder="Facebook / Line"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
@@ -128,7 +130,7 @@ export default function Conframsell() {
                 name="address"
                 rows="4"
                 placeholder="ระบุที่อยู่"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
               ></textarea>
             </div>
 
