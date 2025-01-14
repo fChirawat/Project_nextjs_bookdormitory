@@ -127,10 +127,7 @@ export default function Login() {
           </form>
         </div>
       </div>
-    <div>
-      
-      <h5>Login ของ คนซื้อ</h5>
-    </div>
+    
 
     </>
   );
