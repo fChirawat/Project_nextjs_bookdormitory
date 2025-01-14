@@ -1,5 +1,7 @@
 import NavReg from "@/components/NavReg";
 import Link from "next/link";
+
+
 export default function Register() {
   return (
     <>
@@ -7,7 +9,7 @@ export default function Register() {
         <NavReg />
         <div className="flex items-center justify-center min-h-screen bg-green-200">
           <form className="bg-white p-8 rounded-lg shadow-md w-96">
-            <h2 className="text-2xl font-bold text-center text-black mb-6">Sign up</h2>
+            <h2 className="text-2xl font-bold text-center text-black mb-6">Welcome</h2>
 
             {/* Input: User Name */}
             <div className="mb-4">

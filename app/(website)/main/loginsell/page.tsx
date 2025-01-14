@@ -1,14 +1,14 @@
-import NavReg from "@/components/NavReg";
+import Navaiffiliate from "@/components/Navaiffiliate";
 
 export default function LoginSell() {
   return (
     <>
-    <NavReg />
+    <Navaiffiliate />
 
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-          Seller Login
+          Login Affiliate
         </h2>
         <form>
           <div className="mb-4">

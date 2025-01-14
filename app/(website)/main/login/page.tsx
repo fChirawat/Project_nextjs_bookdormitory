@@ -1,9 +1,10 @@
-import NavReg from "@/components/NavReg";
+import Navlogin from "@/components/Navlogin";
+import Link from "next/link";
 
 export default function Login() {
   return (
     <>     
-      <NavReg />
+      <Navlogin />
 
 
       {/* Login Form */}
@@ -92,23 +93,41 @@ export default function Login() {
               </button>
             </div>
 
+            <div className="flex items-center justify-center mt-4">
+             <a
+               href="loginsell"
+               className="flex items-center gap-2 w-full max-w-xs py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+               >
+                <img
+                  src="/five-stars.png"
+                  alt="five-stars"
+                  className="w-5 h-5"
+                 />
+                  Login Affiliate
+               </a>
+              </div>
+
+
+
             {/* Additional Links */}
-            <p className="text-center text-gray-600 mt-4">
-              <a
-                href="register"
-                className="text-pink-500 hover:underline"
-              >
-                Create an Account
-              </a>
-            </p>
+            <div className="flex items-center justify-between mb-4 mt-4">
+            <a
+              href="registersell"
+              className="text-sm text-pink-500 hover:underline"
+            >
+             Apply Affiliate
+            </a>
+            <a
+              href="register"
+              className="text-sm text-pink-500 hover:underline"
+            >
+              Create an Account
+            </a>
+          </div>
           </form>
         </div>
       </div>
-=======
-    <div>
-      
-      <h5>Login ของ คนซื้อ</h5>
-    </div>
+    
 
     </>
   );
