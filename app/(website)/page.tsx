@@ -123,7 +123,7 @@ export default function Home() {
         </div>
 
         {/** Force Open */}
-        <div className="grid justify-items-start  relative mt-1">
+        <div className="relative mt-1">
       <button
         className="btn bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 ease-in-out focus:outline-none"
         onClick={() => setIsOpen(!isOpen)} // คลิกเพื่อสลับสถานะการเปิด
