@@ -1,5 +1,7 @@
 import NavReg from "@/components/NavReg";
 import Link from "next/link";
+
+
 export default function Register() {
   return (
     <>
