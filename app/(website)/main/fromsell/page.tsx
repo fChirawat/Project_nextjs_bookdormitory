@@ -3,199 +3,242 @@ import Navfrom from "@/components/Navfrom";
 export default function FromSell() {
   return (
     <>
-    <Navfrom />
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          แบบฟอร์มผู้ขาย
-        </h2>
-        <form>
-          {/* ข้อมูลหอพัก */}
-          <div className="mb-4">
-            <label
-              htmlFor="productName"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              ชื่อหอพัก
-            </label>
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              placeholder="ชื่อหอพัก"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-          </div>
-
-          {/* ข้อมูลที่อยู่หอพัก */}
-          <div className="mb-4">
-            <label
-              htmlFor="productName"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              ที่อยู่หอพัก
-            </label>
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              placeholder="เขต/อำเภอ จังหวัด และรหัสไปรษณีย์"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-          </div>
-
-           {/* รายละเอียดหอพัก*/}
-           <div className="mb-4">
-            <label
-              htmlFor="productName"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              รายละเอียดหอพัก
-            </label>
-            <div className="p-1">
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              placeholder="ขนาดห้องพัก"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
+      <Navfrom />
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            แบบฟอร์มผู้ขาย
+          </h2>
+          <form>
+            {/* ข้อมูลผู้ขาย */}
+            <div className="mb-4">
+              <label htmlFor="usernameSell" className="block text-gray-700 font-medium mb-2">
+                ชื่อผู้ขาย
+              </label>
+              <input
+                type="text"
+                id="usernameSell"
+                name="usernameSell"
+                placeholder="ชื่อผู้ขาย"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
             </div>
 
-            <div className="p-1">
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              placeholder="จำนวนห้องพัก"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
+            <div className="mb-4">
+              <label htmlFor="phoneSell" className="block text-gray-700 font-medium mb-2">
+                เบอร์โทรศัพท์
+              </label>
+              <input
+                type="text"
+                id="phoneSell"
+                name="phoneSell"
+                placeholder="เบอร์โทรศัพท์"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
             </div>
 
-          </div>
+            <div className="mb-4">
+              <label htmlFor="emailSell" className="block text-gray-700 font-medium mb-2">
+                อีเมล
+              </label>
+              <input
+                type="email"
+                id="emailSell"
+                name="emailSell"
+                placeholder="อีเมล"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-          {/* ราคา */}
-          <div className="mb-4">
-            <label
-              htmlFor="price"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              ราคา (บาท)
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              placeholder="ระบุราคา"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-            
-          </div>
+            {/* ชื่อหอพัก */}
+            <div className="mb-4">
+              <label htmlFor="nameDormitory" className="block text-gray-700 font-medium mb-2">
+                ชื่อหอพัก
+              </label>
+              <input
+                type="text"
+                id="nameDormitory"
+                name="nameDormitory"
+                placeholder="ชื่อหอพัก"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-          {/*ค่าใช้จ่ายเพิ่มเติม*/}
-          <div className="mb-4">
-            <label
-              htmlFor="price"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              ค่าใช้จ่ายเพิ่มเติม
-            </label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              placeholder="ค่าไฟ/ค่าน้ำ/อินเทอร์เน็ต"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-            
-          </div>
+            {/* ประเภทหอพัก */}
+            <div className="mb-4">
+              <label htmlFor="typeDormitory" className="block text-gray-700 font-medium mb-2">
+                ประเภทหอพัก
+              </label>
+              <input
+                type="text"
+                id="typeDormitory"
+                name="typeDormitory"
+                placeholder="ประเภทหอพัก"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
+            {/* ที่อยู่หอพัก */}
+            <div className="mb-4">
+              <label htmlFor="addressDormitory" className="block text-gray-700 font-medium mb-2">
+                ที่อยู่หอพัก
+              </label>
+              <textarea
+                id="addressDormitory"
+                name="addressDormitory"
+                placeholder="เขต/อำเภอ จังหวัด และรหัสไปรษณีย์"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              ></textarea>
+            </div>
 
-          {/* เฟอร์นิเจอร์ */}
-          <div className="mb-4">
-            <label
-              htmlFor="product"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              เฟอร์นิเจอร์
-            </label>
-            <input
-              type="text"
-              id="product"
-              name="product"
-              placeholder="เฟอร์นิเจอร์"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-              required
-            />
-          </div>
+            {/* รายละเอียดหอพัก */}
+            <div className="mb-4">
+              <label htmlFor="dormitoryDetails" className="block text-gray-700 font-medium mb-2">
+                รายละเอียดหอพัก
+              </label>
+              <textarea
+                id="dormitoryDetails"
+                name="dormitoryDetails"
+                placeholder="รายละเอียดเกี่ยวกับหอพัก"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              ></textarea>
+            </div>
 
-          {/* กฏของหอพัก */}
-          <div className="mb-4">
-            <label
-              htmlFor="description"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              กฏของหอพัก
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              placeholder="ระบุรายละเอียดกฏของหอพัก"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-            ></textarea>
-          </div>
+            {/* สิ่งอำนวยความสะดวก */}
+            <div className="mb-4">
+              <label htmlFor="facilitiesDormitory" className="block text-gray-700 font-medium mb-2">
+                สิ่งอำนวยความสะดวก
+              </label>
+              <textarea
+                id="facilitiesDormitory"
+                name="facilitiesDormitory"
+                placeholder="สิ่งอำนวยความสะดวก เช่น เตียง, ตู้เสื้อผ้า, เครื่องปรับอากาศ"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              ></textarea>
+            </div>
 
-          {/* หมายเหตุ */}
-          <div className="mb-4">
-            <label
-              htmlFor="description"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              หมายเหตุ
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              placeholder="ระบุรายละเอียด"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-            ></textarea>
-          </div>
+            {/* จำนวนห้อง */}
+            <div className="mb-4">
+              <label htmlFor="roomNumber" className="block text-gray-700 font-medium mb-2">
+                จำนวนห้องพัก
+              </label>
+              <input
+                type="number"
+                id="roomNumber"
+                name="roomNumber"
+                placeholder="ระบุจำนวนห้อง"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-          {/* อัปโหลดรูปภาพหอพัก */}
-          <div className="mb-4">
-            <label
-              htmlFor="image"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              อัปโหลดรูปภาพหอพัก ภายนอก/ภายใน
-            </label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/*"
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-            />
-          </div>
+            {/* เงินมัดจำ */}
+            <div className="mb-4">
+              <label htmlFor="roomDeposit" className="block text-gray-700 font-medium mb-2">
+                เงินมัดจำ (บาท)
+              </label>
+              <input
+                type="number"
+                id="roomDeposit"
+                name="roomDeposit"
+                placeholder="เงินมัดจำ"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-          {/* ปุ่มส่งฟอร์ม */}
-          <div className="mb-4">
-            <button
-              type="submit"
-              className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
-            >
-              ส่งข้อมูลสินค้า
-            </button>
-          </div>
-        </form>
+            {/* ค่าใช้จ่าย */}
+            <div className="mb-4">
+              <label htmlFor="priceElectricity" className="block text-gray-700 font-medium mb-2">
+                ค่าไฟ (บาท)
+              </label>
+              <input
+                type="number"
+                id="priceElectricity"
+                name="priceElectricity"
+                placeholder="ค่าไฟ"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="priceWater" className="block text-gray-700 font-medium mb-2">
+                ค่าน้ำ (บาท)
+              </label>
+              <input
+                type="number"
+                id="priceWater"
+                name="priceWater"
+                placeholder="ค่าน้ำ"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="priceWifi" className="block text-gray-700 font-medium mb-2">
+                ค่าอินเทอร์เน็ต (บาท)
+              </label>
+              <input
+                type="number"
+                id="priceWifi"
+                name="priceWifi"
+                placeholder="ค่าอินเทอร์เน็ต"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="priceOther" className="block text-gray-700 font-medium mb-2">
+                ค่าใช้จ่ายอื่น ๆ (บาท)
+              </label>
+              <input
+                type="number"
+                id="priceOther"
+                name="priceOther"
+                placeholder="ค่าใช้จ่ายเพิ่มเติม"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            {/* รูปภาพหอพัก */}
+            <div className="mb-4">
+              <label htmlFor="photoDormitory" className="block text-gray-700 font-medium mb-2">
+                รูปภาพหอพัก
+              </label>
+              <input
+                type="file"
+                id="photoDormitory"
+                name="photoDormitory"
+                accept="image/*"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            {/* ปุ่มส่งฟอร์ม */}
+            <div className="mb-4">
+              <button
+                type="submit"
+                className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+              >
+                ส่งข้อมูลสินค้า
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
     </>
   );
 }
