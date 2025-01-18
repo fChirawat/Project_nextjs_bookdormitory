@@ -1,11 +1,52 @@
+"use client";
+
+import { useState } from "react";
 import Navlogin from "@/components/Navlogin";
 import Link from "next/link";
 
 export default function Login() {
-  return (
-    <>     
-      <Navlogin />
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
 
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const validateForm = () => {
+    const newErrors: any = {};
+    if (!formData.username) {
+      newErrors.username = "กรุณากรอกชื่อผู้ใช้";
+    }
+    if (!formData.password) {
+      newErrors.password = "กรุณากรอกรหัสผ่าน";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateForm()) {
+      alert("เข้าสู่ระบบสำเร็จ!");
+    }
+  };
+
+  return (
+    <>
+      <Navlogin />
 
       {/* Login Form */}
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -13,7 +54,7 @@ export default function Login() {
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             Login
           </h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             {/* Username Field */}
             <div className="mb-4">
               <label
@@ -28,7 +69,12 @@ export default function Login() {
                 name="username"
                 placeholder="Enter your Username"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                value={formData.username}
+                onChange={handleInputChange}
               />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+              )}
             </div>
 
             {/* Password Field */}
@@ -45,7 +91,12 @@ export default function Login() {
                 name="password"
                 placeholder="Enter your Password"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                value={formData.password}
+                onChange={handleInputChange}
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              )}
             </div>
 
             {/* Submit Button */}
@@ -70,11 +121,7 @@ export default function Login() {
               <button
                 className="flex items-center gap-2 w-full max-w-xs py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
               >
-                <img
-                  src="/google.png"
-                  alt="Google Icon"
-                  className="w-5 h-5"
-                />
+                <img src="/google.png" alt="Google Icon" className="w-5 h-5" />
                 Continue with Google
               </button>
             </div>
@@ -94,41 +141,37 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-center mt-4">
-             <a
-               href="loginsell"
-               className="flex items-center gap-2 w-full max-w-xs py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-               >
+              <a
+                href="/main/loginsell"
+                className="flex items-center gap-2 w-full max-w-xs py-2 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+              >
                 <img
                   src="/five-stars.png"
                   alt="five-stars"
                   className="w-5 h-5"
-                 />
-                  Login Affiliate
-               </a>
-              </div>
-
-
+                />
+                Login Affiliate
+              </a>
+            </div>
 
             {/* Additional Links */}
             <div className="flex items-center justify-between mb-4 mt-4">
-            <a
-              href="registersell"
-              className="text-sm text-pink-500 hover:underline"
-            >
-             Apply Affiliate
-            </a>
-            <a
-              href="register"
-              className="text-sm text-pink-500 hover:underline"
-            >
-              Create an Account
-            </a>
-          </div>
+              <a
+                href="/main/registersell"
+                className="text-sm text-pink-500 hover:underline"
+              >
+                Apply Affiliate
+              </a>
+              <a
+                href="/main/register"
+                className="text-sm text-pink-500 hover:underline"
+              >
+                Create an Account
+              </a>
+            </div>
           </form>
         </div>
       </div>
-    
-
     </>
   );
 }
