@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// This is your Prisma schema file.
+// Learn more at https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  phone     String   @unique
+  password  String
+  profile   Profile?
+
+  @@unique([username, email, phone]) // Enforce uniqueness for these fields
+}
+
+model Profile {
+  id                  Int      @id @default(autoincrement())
+  userId              Int      @unique
+  firstName           String
+  lastName            String
+  address             String
+  photoIDcard         String
+  relationship        String
+  phoneRelationship   String
+  user                User     @relation(fields: [userId], references: [id])
+}
+
+model UserSell {
+  id         Int         @id @default(autoincrement())
+  username   String      @unique
+  email      String      @unique
+  phone      String      @unique
+  password   String
+  profile    ProfileSell?
+
+  @@unique([username, email, phone]) // Enforce uniqueness for these fields
+}
+
+model ProfileSell {
+  id             Int       @id @default(autoincrement())
+  userSellId     Int       @unique
+  firstName      String
+  lastName       String
+  address        String
+  photoIDcard    String
+  userSell       UserSell  @relation(fields: [userSellId], references: [id])
+}
+
+model FormSell {
+  id                Int       @id @default(autoincrement())
+  userSellId        Int
+  nameDormitory     String
+  typeDormitory     String
+  addressDormitory  String
+  dormitoryDetails  String
+  facilities        String
+  roomNumber        Int
+  roomDeposit       Float  //ค่ามัดจำ
+  priceMonth        Float  //ค่าห้อง
+  priceElectricity  Float
+  priceWater        Float
+  priceWifi         Float
+  priceOther        Float
+  photoDormitory    String
+  userSell          UserSell  @relation(fields: [userSellId], references: [id])
+}
