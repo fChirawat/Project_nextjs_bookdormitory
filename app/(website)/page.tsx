@@ -1,176 +1,165 @@
-'use client'; 
+import React from 'react';
 
-import Navbar from '@/components/Navbar';
-import Link from 'next/link';
-import { useState } from 'react';
-
-export default function Home() {
-  const [searchText, setSearchText] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [isOpen, setIsOpen] = useState(true); // กำหนดให้เปิดอยู่เสมอ
-  const allOptions = [
-    'หอพัก A',
-    'หอพัก B',
-    'หอพัก C',
-    'หอพัก D',
-    'ใกล้มหาวิทยาลัย',
-    'ใกล้ตลาดสด',
-    'ใกล้สถานีขนส่ง',
-    'ใกล้ห้างสรรพสินค้า',
-  ];
-
-  const handleSearchChange = (event) => {
-    const text = event.target.value;
-    setSearchText(text);
-
-    if (text) {
-      const filteredSuggestions = allOptions.filter((option) =>
-        option.toLowerCase().includes(text.toLowerCase())
-      );
-      setSuggestions(filteredSuggestions);
-    } else {
-      setSuggestions([]);
-    }
-  };
-
-  const handleSelectSuggestion = (suggestion) => {
-    setSearchText(suggestion);
-    setSuggestions([]); // Hide suggestions after selection
-  };
-
-  const dorms = [
-    {
-      name: 'หอพัก A',
-      location: 'ใกล้มหาวิทยาลัย',
-      price: '3,500 บาท/เดือน',
-      description: 'หอพักสะอาดและปลอดภัย มีที่จอดรถ',
-      image: '/images/dorm-a.jpg',
-    },
-    {
-      name: 'หอพัก B',
-      location: 'ใกล้ตลาดสด',
-      price: '4,000 บาท/เดือน',
-      description: 'หอพักติดกับร้านสะดวกซื้อและสถานีรถไฟฟ้า',
-      image: '/images/dorm-b.jpg',
-    },
-    {
-      name: 'หอพัก C',
-      location: 'ใกล้สถานีขนส่ง',
-      price: '3,800 บาท/เดือน',
-      description: 'หอพักเงียบสงบและมีบริการอินเทอร์เน็ตฟรี',
-      image: '/images/dorm-c.jpg',
-    },
-    {
-      name: 'หอพัก D',
-      location: 'ใกล้ห้างสรรพสินค้า',
-      price: '4,200 บาท/เดือน',
-      description: 'หอพักมีกล้องวงจรปิดและมีร้านกาแฟในพื้นที่',
-      image: '/images/dorm-d.jpg',
-    },
-  ];
-
+// Card Component
+const Card = ({
+  mainImage,
+  secondaryImages,
+  nameDormitory,
+  typeDormitory,
+  distance,
+  priceMonth,
+  roomDeposit,
+  priceElectricity,
+}) => {
   return (
-    <div>
-      <Navbar />
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <h1 className="text-3xl font-bold">ยินดีต้อนรับสู่หน้าหอพัก</h1>
-        <p className="text-gray-600 mt-2">เลือกหอพักที่คุณสนใจ</p>
-
-        {/* Search Bar */}
-        <div className="relative flex items-center justify-center mt-2">
-          <label className="input input-bordered flex items-center gap-2 relative">
-            <input
-              type="text"
-              style={{
-                width: '800px',
-                height: '40px',
-                border: '2px solid gray',
-                borderRadius: '8px',
-                padding: '8px',
-              }}
-              placeholder="Search"
-              value={searchText}
-              onChange={handleSearchChange}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              style={{ width: '24px', height: '24px' }}
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </label>
-
-          {/* Dropdown Menu */}
-          {suggestions.length > 0 && (
-            <ul className="absolute top-full left-0 bg-white border border-gray-300 rounded-lg w-full max-w-md shadow-lg z-10 mt-1">
-              {suggestions.map((suggestion, index) => (
-                <li
-                  key={index}
-                  className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleSelectSuggestion(suggestion)}
-                >
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
+    <div className="border rounded-lg shadow-md p-4 flex w-full">
+      {/* Main and Secondary Images */}
+      <div className="flex w-1/3">
+        {/* Main Image */}
+        <div className="flex flex-col items-center w-2/3 border border-gray-300 rounded-lg p-2">
+          <img
+            src={mainImage}
+            alt="Main Dormitory"
+            className="w-full h-48 object-cover rounded-lg"
+          />
+          <p className="text-center text-sm mt-2">ตำแหน่งที่ 1</p>
         </div>
 
-        {/** Force Open */}
-        <div className="relative mt-1">
-      <button
-        className="btn bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 ease-in-out focus:outline-none"
-        onClick={() => setIsOpen(!isOpen)} // คลิกเพื่อสลับสถานะการเปิด
-      >
-        ราคา
-      </button>
-
-      {/* ใช้ isOpen เพื่อควบคุมการเปิดหรือปิดเมนู */}
-      {isOpen && (
-        <ul className="absolute left-0 mt-2 bg-white rounded-lg w-52 shadow-lg z-10">
-          <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition-colors duration-200">
-            สูง - ต่ำ
-          </li>
-          <li className="hover:bg-gray-100 px-4 py-2 cursor-pointer transition-colors duration-200">
-            ต่ำ - สูง
-          </li>
-        </ul>
-      )}
-    </div>
-
-        {/* Dorm List */}
-        <div className="flex flex-col items-center gap-6 mt-8 px-4">
-          {dorms.map((dorm, index) => (
+        {/* Secondary Images */}
+        <div className="flex flex-col w-1/3 space-y-2 pl-4">
+          {secondaryImages.map((image, index) => (
             <div
               key={index}
-              className="bg-white w-full max-w-md p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+              className="border border-gray-300 rounded-lg p-2 flex flex-col items-center"
             >
               <img
-                src={dorm.image}
-                alt={`ภาพของ ${dorm.name}`}
-                className="w-full h-48 object-cover rounded-lg"
+                src={image}
+                alt={`Secondary ${index + 1}`}
+                className="w-full h-24 object-cover rounded-lg"
               />
-              <div className="mt-4">
-                <h2 className="text-lg font-semibold">{dorm.name}</h2>
-                <p className="text-gray-500 text-sm">ทำเล: {dorm.location}</p>
-                <p className="text-gray-500 text-sm">ราคา: {dorm.price}</p>
-                <p className="text-gray-700 text-sm mt-2">{dorm.description}</p>
-              </div>
-              <Link href={`/dorms/${dorm.name}`}>
-                <button className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                  ดูรายละเอียด
-                </button>
-              </Link>
+              <p className="text-center text-sm mt-2">ตำแหน่งที่ {index + 2}</p>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Content Section */}
+      <div className="flex-1 ml-6 flex flex-col justify-between">
+        {/* Details */}
+        <div>
+          <h3 className="text-lg font-bold mb-2">ชื่อหอพัก: {nameDormitory}</h3>
+          <p className="text-sm text-gray-600 mb-2">
+            ประเภทหอพัก: {typeDormitory}
+          </p>
+          <p className="text-sm text-gray-600 mb-4">
+            ห่างจากมหาวิทยาลัย: {distance}
+          </p>
+
+          <div className="text-sm text-gray-700 space-y-2">
+            <p>ค่าเช่าห้องต่อเดือน: {priceMonth}฿</p>
+            <p>ค่ามัดจำล่วงหน้า: {roomDeposit}฿</p>
+            <p>ค่าไฟฟ้าต่อหน่วย: {priceElectricity}฿</p>
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col items-end space-y-2 mt-6">
+          <button className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg shadow w-40">
+            รายละเอียด
+          </button>
+          <button className="bg-gray-400 text-white px-6 py-3 rounded-lg shadow w-40">
+            จองหอพัก
+          </button>
+        </div>
+      </div>
     </div>
+  );
+};
+
+// Home Component
+export default function Home() {
+  return (
+    <>
+      {/* Navbar */}
+      <nav className="bg-pink-200 border-gray-200">
+        <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          <a className="flex items-center space-x-3 rtl:space-x-reverse">
+            <img
+              src="/five-stars.png"
+              alt="Five Stars"
+              className="w-48 h-12 object-contain"
+            />
+            <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-black">
+              OUR PROJECT
+            </span>
+          </a>
+          <div
+            className="hidden w-full md:block md:w-auto"
+            id="navbar-default"
+          >
+            <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-pink-200">
+              <li>
+                <a
+                  href="#"
+                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-500 md:p-0 dark:text-black md:dark:hover:text-red-500 dark:hover:text-white md:dark:hover:bg-transparent"
+                >
+                  About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-500 md:p-0 dark:text-black md:dark:hover:text-red-500 dark:hover:text-white md:dark:hover:bg-transparent"
+                >
+                  Services
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-500 md:p-0 dark:text-black md:dark:hover:text-red-500 dark:hover:text-white md:dark:hover:bg-transparent"
+                >
+                  Login
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      {/* Content */}
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">รายการหอพัก</h1>
+
+        {/* Card Component Example */}
+        <Card
+          mainImage="/main-dormitory.jpg"
+          secondaryImages={[
+            "/secondary1.jpg",
+            "/secondary2.jpg",
+          ]}
+          nameDormitory="หอพักตัวอย่าง"
+          typeDormitory="คอนโด"
+          distance="800 เมตร"
+          priceMonth={5500}
+          roomDeposit={5000}
+          priceElectricity={20}
+        />
+
+        <Card
+          mainImage="/main-dormitory.jpg"
+          secondaryImages={[
+            "/secondary1.jpg",
+            "/secondary2.jpg",
+          ]}
+          nameDormitory="หอพักที่ 2"
+          typeDormitory="คอนโด"
+          distance="1800 เมตร"
+          priceMonth={5500}
+          roomDeposit={5000}
+          priceElectricity={20}
+        />
+      </div>
+    </>
   );
 }
