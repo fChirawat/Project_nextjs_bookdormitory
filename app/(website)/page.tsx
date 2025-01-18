@@ -6,7 +6,7 @@ const Card = ({
   secondaryImages,
   nameDormitory,
   typeDormitory,
-  distance,
+  distanceDormitory,
   priceMonth,
   roomDeposit,
   priceElectricity,
@@ -52,7 +52,7 @@ const Card = ({
             ประเภทหอพัก: {typeDormitory}
           </p>
           <p className="text-sm text-gray-600 mb-4">
-            ห่างจากมหาวิทยาลัย: {distance}
+            ห่างจากมหาวิทยาลัย: {distanceDormitory}
           </p>
 
           <div className="text-sm text-gray-700 space-y-2">
@@ -116,7 +116,7 @@ export default function Home() {
               </li>
               <li>
                 <a
-                  href="#"
+                  href="/login"
                   className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-500 md:p-0 dark:text-black md:dark:hover:text-red-500 dark:hover:text-white md:dark:hover:bg-transparent"
                 >
                   Login
@@ -140,7 +140,7 @@ export default function Home() {
           ]}
           nameDormitory="หอพักตัวอย่าง"
           typeDormitory="คอนโด"
-          distance="800 เมตร"
+          distanceDormitory="800 เมตร"
           priceMonth={5500}
           roomDeposit={5000}
           priceElectricity={20}
@@ -154,7 +154,7 @@ export default function Home() {
           ]}
           nameDormitory="หอพักที่ 2"
           typeDormitory="คอนโด"
-          distance="1800 เมตร"
+          distanceDormitory ="1800 เมตร"
           priceMonth={5500}
           roomDeposit={5000}
           priceElectricity={20}
