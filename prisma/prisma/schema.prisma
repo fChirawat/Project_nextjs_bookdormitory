@@ -17,51 +17,52 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  phone     String   @unique
-  password  String
-  profile   Profile?
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String   @unique
+  phone    String   @unique
+  password String
+  profile  Profile? // เชื่อมโยงไปยัง Profile
 
-  @@unique([username, email, phone]) // Enforce uniqueness for these fields
+  @@unique([username, email, phone])
 }
 
 model Profile {
-  id                  Int      @id @default(autoincrement())
-  userId              Int      @unique
-  firstName           String
-  lastName            String
-  address             String
-  photoIDcard         String
-  relationship        String
-  phoneRelationship   String
-  user                User     @relation(fields: [userId], references: [id])
+  id                Int    @id @default(autoincrement())
+  userId            Int    @unique
+  firstName         String
+  lastName          String
+  address           String
+  photoIDcard       String
+  relationship      String
+  phoneRelationship String
+  user              User   @relation(fields: [userId], references: [id]) // เชื่อมโยงกลับไปที่ User
 }
 
 model UserSell {
-  id         Int         @id @default(autoincrement())
-  username   String      @unique
-  email      String      @unique
-  phone      String      @unique
-  password   String
-  profile    ProfileSell?
+  id        Int          @id @default(autoincrement())
+  username  String       @unique
+  email     String       @unique
+  phone     String       @unique
+  password  String
+  profile   ProfileSell? // เชื่อมโยงไปยัง ProfileSell
+  formSells FormSell[] // เชื่อมโยงไปยัง FormSell
 
-  @@unique([username, email, phone]) // Enforce uniqueness for these fields
+  @@unique([username, email, phone])
 }
 
 model ProfileSell {
-  id             Int       @id @default(autoincrement())
-  userSellId     Int       @unique
-  firstName      String
-  lastName       String
-  address        String
-  photoIDcard    String
-  userSell       UserSell  @relation(fields: [userSellId], references: [id])
+  id          Int      @id @default(autoincrement())
+  userSellId  Int      @unique
+  firstName   String
+  lastName    String
+  address     String
+  photoIDcard String
+  userSell    UserSell @relation(fields: [userSellId], references: [id]) // เชื่อมโยงกลับไปที่ UserSell
 }
 
 model FormSell {
-  id                Int       @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
   userSellId        Int
   nameDormitory     String
   typeDormitory     String
@@ -69,13 +70,13 @@ model FormSell {
   dormitoryDetails  String
   facilities        String
   roomNumber        Int
-  distanceDormitory String //ระยะทาง
-  roomDeposit       Float  //ค่ามัดจำ
-  priceMonth        Float  //ค่าห้อง
+  distanceDormitory String
+  roomDeposit       Float
+  priceMonth        Float
   priceElectricity  Float
   priceWater        Float
   priceWifi         Float
   priceOther        Float
   photoDormitory    String
-  userSell          UserSell  @relation(fields: [userSellId], references: [id])
+  userSell          UserSell @relation(fields: [userSellId], references: [id]) // เชื่อมโยงกลับไปที่ UserSell
 }

@@ -37,10 +37,32 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      alert("เข้าสู่ระบบสำเร็จ!");
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: formData.username,
+            password: formData.password,
+          }),
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert(data.message);
+          // Redirect to the homepage
+          window.location.href = "/main/home";
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        alert("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+      }
     }
   };
 
