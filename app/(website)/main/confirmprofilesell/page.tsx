@@ -1,7 +1,20 @@
+'use client';
 import Navconfile from "@/components/Navconfile";
-
+import { useState } from 'react';
 
 export default function Conframsell() {
+  const [profileImage, setProfileImage] = useState<string | null>(null); // เก็บข้อมูลรูปภาพ
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileImage(reader.result as string); // เก็บ URL รูปภาพใน state
+      };
+      reader.readAsDataURL(file); // อ่านไฟล์เป็น Data URL
+    }
+  };
   return (
   <>
       <Navconfile />
@@ -11,18 +24,25 @@ export default function Conframsell() {
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             ยืนยันตัวตนฝ่ายผู้ขาย
           </h2>
-          <div className="avatar placeholder flex flex-col items-center gap-4">
+          <div className="avatar placeholder flex flex-col items-center gap-4 mt-4">
             {/* Profile */}
             <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 relative">
               <input
                 type="file"
                 className="file-input absolute inset-0 opacity-0 cursor-pointer"
+                onChange={handleImageUpload}
               />
-              <img
-                id="preview"
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-400 text-sm flex items-center justify-center h-full">
+                  อัปโหลดรูป
+                </span>
+              )}
             </div>
           </div>
 
