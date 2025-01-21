@@ -12,6 +12,21 @@ yarn dev
 pnpm dev
 # or
 bun dev
+
+อัพเดทข้อมูลให้ใช้คำสั่ง
+git init
+git add .
+git commit -m "..."
+git push
+git push origin main
+
+หากต้องการดึงข้อมูล
+git pull
+git pull origin main
+
+หากต้องswitch
+git branch เพื่อดู
+git switch ....ชื่อclassgithubตัวเอง
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
