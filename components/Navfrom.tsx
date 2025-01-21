@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function NavReg() {
+export default function Navform() {
     return (
       <nav className="bg-pink-200 border-gray-200">
         <div className="max-w-screen-xl flex items-center justify-between mx-auto p-4">

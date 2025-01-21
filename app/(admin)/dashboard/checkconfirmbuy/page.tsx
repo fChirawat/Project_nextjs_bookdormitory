@@ -1,4 +1,4 @@
-export default function Checkconfilmbuy (){
+export default function Checkconfirmbuy (){
     return (
         <>
           <div>
