@@ -7,7 +7,7 @@ export default function NavReg() {
           {/* รูปภาพอยู่ด้านซ้าย */}
           <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
             <img src="/five-stars.png" alt="Five Stars" className="w-10 h-12 object-contain" />
-          </Li>
+          </Link>
   
           {/* ข้อความ Register อยู่ตรงกลาง */}
           <div className="flex-grow flex justify-center">
