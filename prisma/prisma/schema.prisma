@@ -1,12 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-// This is your Prisma schema file.
-// Learn more at https://pris.ly/d/prisma-schema
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -22,7 +13,7 @@ model User {
   email    String   @unique
   phone    String   @unique
   password String
-  profile  Profile? // เชื่อมโยงไปยัง Profile
+  profile  Profile? // Linked to Profile
 
   @@unique([username, email, phone])
 }
@@ -33,10 +24,10 @@ model Profile {
   firstName         String
   lastName          String
   address           String
-  photoIDcard       String
+  photoIdCard       String
   relationship      String
   phoneRelationship String
-  user              User   @relation(fields: [userId], references: [id]) // เชื่อมโยงกลับไปที่ User
+  user              User   @relation(fields: [userId], references: [id]) // Linked back to User
 }
 
 model UserSell {
@@ -45,20 +36,20 @@ model UserSell {
   email     String       @unique
   phone     String       @unique
   password  String
-  profile   ProfileSell? // เชื่อมโยงไปยัง ProfileSell
-  formSells FormSell[] // เชื่อมโยงไปยัง FormSell
+  profile   ProfileSell? // Linked to ProfileSell
+  formSells FormSell[]   // Linked to FormSell
 
   @@unique([username, email, phone])
 }
 
 model ProfileSell {
   id          Int      @id @default(autoincrement())
-  userSellId  Int      @unique
+  userId      Int      @unique
   firstName   String
   lastName    String
   address     String
-  photoIDcard String
-  userSell    UserSell @relation(fields: [userSellId], references: [id]) // เชื่อมโยงกลับไปที่ UserSell
+  photoIdCard String
+  userSell    UserSell @relation(fields: [userId], references: [id]) // Linked back to UserSell
 }
 
 model FormSell {
@@ -67,16 +58,16 @@ model FormSell {
   nameDormitory     String
   typeDormitory     String
   addressDormitory  String
-  dormitoryDetails  String
+  dormitoryDetails  String?
   facilities        String
   roomNumber        Int
-  distanceDormitory String
+  distanceDormitory Float
   roomDeposit       Float
   priceMonth        Float
   priceElectricity  Float
   priceWater        Float
   priceWifi         Float
   priceOther        Float
-  photoDormitory    String
-  userSell          UserSell @relation(fields: [userSellId], references: [id]) // เชื่อมโยงกลับไปที่ UserSell
+  photoDormitory    String?
+  userSell          UserSell @relation(fields: [userSellId], references: [id]) // Linked back to UserSell
 }
