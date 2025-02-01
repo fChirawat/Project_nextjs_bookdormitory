@@ -1,4 +1,5 @@
 import Navbar from '@/components/Navbar';
+import NavHome from '@/components/NavHome';
 import React from 'react';
 
 // Card Component
@@ -81,7 +82,7 @@ const Card = ({
 export default function Home() {
   return (
     <>
-      <Navbar/>
+      <NavHome/>
 
       {/* Content */}
       <div className="container mx-auto p-4">
