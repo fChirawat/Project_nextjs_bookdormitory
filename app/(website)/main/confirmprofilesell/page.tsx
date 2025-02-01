@@ -3,20 +3,29 @@ import Navconfile from "@/components/Navconfile";
 import { useState } from 'react';
 
 export default function Conframsell() {
-  const [profileImage, setProfileImage] = useState<string | null>(null); // เก็บข้อมูลรูปภาพ
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [title, setTitle] = useState<string>("");
+  const [firstname, setFirstname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setProfileImage(reader.result as string); // เก็บ URL รูปภาพใน state
+        setProfileImage(reader.result as string);
       };
-      reader.readAsDataURL(file); // อ่านไฟล์เป็น Data URL
+      reader.readAsDataURL(file);
     }
   };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ title, firstname, lastname, profileImage });
+  };
+
   return (
-  <>
+    <>
       <Navconfile />
 
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
@@ -25,11 +34,10 @@ export default function Conframsell() {
             ยืนยันตัวตนฝ่ายผู้ขาย
           </h2>
           <div className="avatar placeholder flex flex-col items-center gap-4 mt-4">
-            {/* Profile */}
             <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 relative">
               <input
                 type="file"
-                className="file-input absolute inset-0 opacity-0 cursor-pointer"
+                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
                 onChange={handleImageUpload}
               />
               {profileImage ? (
@@ -46,54 +54,82 @@ export default function Conframsell() {
             </div>
           </div>
 
-          <form>
-            {/* ชื่อ-นามสกุล */}
-            <div className="mb-4">
-              <label
-                htmlFor="fullName"
-                className="block text-gray-700 font-medium mb-2"
-              >
-                ชื่อ-นามสกุล
+          {/* First Name */}
+          <div className="mb-4">
+              <label htmlFor="username" className="block text-gray-700 font-medium mb-2">
+                username
               </label>
               <input
                 type="text"
-                id="fullName"
-                name="fullName"
-                placeholder="ระบุชื่อ-นามสกุล"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                id="username"
+                placeholder="username"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              />
+            </div>
+          <form onSubmit={handleSubmit}>
+            {/* คำนำหน้า */}
+            <div className="mb-4">
+              <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                คำนำหน้า
+              </label>
+              <select
+                id="titlesell"
+                name="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                required
+              >
+                <option value="" disabled>เลือกคำนำหน้า</option>
+                <option value="นาย">นาย</option>
+                <option value="นางสาว">นางสาว</option>
+                <option value="นาง">นาง</option>
+              </select>
+            </div>
+
+            {/* First Name */}
+            <div className="mb-4">
+              <label htmlFor="firstnamesell" className="block text-gray-700 font-medium mb-2">
+                ชื่อจริง
+              </label>
+              <input
+                type="text"
+                id="firstnamesell"
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+                placeholder="ชื่อจริง"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
 
-            {/* ชื่อเล่น */}
+            {/* Last Name */}
             <div className="mb-4">
-              <label
-                htmlFor="nickname"
-                className="block text-gray-700 font-medium mb-2"
-              >
-                ชื่อเล่น
+              <label htmlFor="lastnamesell" className="block text-gray-700 font-medium mb-2">
+                นามสกุล
               </label>
               <input
                 type="text"
-                id="nickname"
-                name="nickname"
-                placeholder="ชื่อเล่น"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                id="lastnamesell"
+                value={lastname}
+                onChange={(e) => setLastname(e.target.value)}
+                placeholder="นามสกุล"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
+
+            
 
             {/* Email */}
             <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
                 Email
               </label>
               <input
                 type="email"
-                id="email"
+                id="emailsell"
                 name="email"
                 placeholder="Email"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
@@ -101,17 +137,14 @@ export default function Conframsell() {
               />
             </div>
 
-            {/* NumberPhone */}
+            {/* Phone Number */}
             <div className="mb-4">
-              <label
-                htmlFor="phoneNumber"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="phoneNumber" className="block text-gray-700 font-medium mb-2">
                 เบอร์โทรศัพท์
               </label>
               <input
                 type="text"
-                id="phoneNumber"
+                id="phoneNumbersell"
                 name="phoneNumber"
                 placeholder="เบอร์โทรศัพท์"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
@@ -119,12 +152,9 @@ export default function Conframsell() {
               />
             </div>
 
-            {/* ข้อมูลที่สามารถติดต่อได้ */}
+            {/* Contact Info */}
             <div className="mb-4">
-              <label
-                htmlFor="contactInfo"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="contactInfo" className="block text-gray-700 font-medium mb-2">
                 ข้อมูลที่สามารถติดต่อได้
               </label>
               <input
@@ -139,10 +169,7 @@ export default function Conframsell() {
 
             {/* ที่อยู่ */}
             <div className="mb-4">
-              <label
-                htmlFor="address"
-                className="block text-gray-700 font-medium mb-2"
-              >
+              <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
                 ที่อยู่
               </label>
               <textarea

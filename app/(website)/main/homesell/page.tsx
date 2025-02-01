@@ -1,5 +1,6 @@
 import Navbar from '@/components/Navbar';
 import NavHome from '@/components/NavHome';
+import NavHomeSell from '@/components/NavHomeSell';
 import React from 'react';
 
 // Card Component
@@ -82,11 +83,11 @@ const Card = ({
 export default function Home() {
   return (
     <>
-      <NavHome/>
+      <NavHomeSell/>
 
       {/* Content */}
       <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">รายการหอพัก</h1>
+        <h1 className="text-3xl font-bold mb-6">รายการหอพักของฉัน</h1>
 
         {/* Card Component Example */}
         <Card

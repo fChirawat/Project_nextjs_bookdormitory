@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function RegisterSell() {
   const [formData, setFormData] = useState({
-    username: "",
+    userName: "", // เปลี่ยนจาก username เป็น userName
     email: "",
     phone: "",
     password: "",
@@ -27,7 +27,7 @@ export default function RegisterSell() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.username.trim()) newErrors.username = "กรุณากรอกชื่อผู้ใช้";
+    if (!formData.userName.trim()) newErrors.userName = "กรุณากรอกชื่อผู้ใช้";
     if (!formData.email.trim()) newErrors.email = "กรุณากรอกอีเมล";
     else if (!/^\S+@\S+\.\S+$/.test(formData.email))
       newErrors.email = "รูปแบบอีเมลไม่ถูกต้อง";
@@ -51,7 +51,7 @@ export default function RegisterSell() {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("/api/registersell", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,17 +59,17 @@ export default function RegisterSell() {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        alert(errorData.message || "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์");
+        alert(data.message || "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์");
         return;
       }
 
-      const data = await response.json();
-      alert(data.message);
+      alert("🎉 ลงทะเบียนสำเร็จ!");
 
       setFormData({
-        username: "",
+        userName: "",
         email: "",
         phone: "",
         password: "",
@@ -94,21 +94,21 @@ export default function RegisterSell() {
           onSubmit={handleSubmit}
         >
           <h2 className="text-2xl font-bold text-center text-black mb-6">
-            Welcome
+            Register as Seller
           </h2>
 
           {/* Input: User Name */}
           <div className="mb-4">
             <input
               type="text"
-              name="username"
+              name="userName" // เปลี่ยนจาก username เป็น userName
               placeholder="User Name"
-              value={formData.username}
+              value={formData.userName}
               onChange={handleInputChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            {errors.username && (
-              <p className="text-red-500 text-sm">{errors.username}</p>
+            {errors.userName && (
+              <p className="text-red-500 text-sm">{errors.userName}</p>
             )}
           </div>
 
@@ -127,12 +127,12 @@ export default function RegisterSell() {
             )}
           </div>
 
-          {/* Input: Number Phone */}
+          {/* Input: Phone Number */}
           <div className="mb-4">
             <input
               type="tel"
               name="phone"
-              placeholder="Number Phone"
+              placeholder="Phone Number"
               value={formData.phone}
               onChange={handleInputChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
@@ -182,7 +182,7 @@ export default function RegisterSell() {
               className="mr-2"
             />
             <label htmlFor="accept" className="text-gray-700">
-              Accept
+              Accept Terms & Conditions
             </label>
             {errors.accept && (
               <p className="text-red-500 text-sm ml-2">{errors.accept}</p>

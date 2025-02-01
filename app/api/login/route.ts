@@ -6,14 +6,14 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const JWT_SECRET = "your_secret_key"; // ใช้ secret ที่ปลอดภัย
+const JWT_SECRET = "your_secret_key"; // Use a secure secret
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { username, password } = body;
 
-    // ตรวจสอบว่ามี username และ password
+    // Validate input
     if (!username || !password) {
       return NextResponse.json(
         { success: false, message: "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน" },
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ค้นหาผู้ใช้ในฐานข้อมูล
+    // Find user in database
     const user = await prisma.user.findUnique({
       where: { username },
     });
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // ตรวจสอบความถูกต้องของรหัสผ่าน
+    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return NextResponse.json(
@@ -42,23 +42,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // สร้าง JWT Token
+    // Generate JWT Token
     const token = jwt.sign(
-      { id: user.id, username: user.username }, // Payload
-      JWT_SECRET, // Secret Key
-      { expiresIn: "1h" } // หมดอายุใน 1 ชั่วโมง
+      { id: user.id, username: user.username },
+      JWT_SECRET,
+      { expiresIn: "1h" }
     );
 
-    // ตั้งค่า Cookie
+    // Set Cookie
     const response = NextResponse.json(
       { success: true, message: "เข้าสู่ระบบสำเร็จ!" },
       { status: 200 }
     );
     response.cookies.set("token", token, {
-      httpOnly: true, // ป้องกันการเข้าถึงจาก JavaScript ฝั่ง client
-      secure: process.env.NODE_ENV === "production", // ใช้ secure เฉพาะใน production
-      sameSite: "strict", // ป้องกัน CSRF
-      maxAge: 3600, // อายุ Cookie (1 ชั่วโมง)
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600, // 1 hour
     });
 
     return response;
