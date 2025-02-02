@@ -1,32 +1,18 @@
+import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
 
-// สร้างการเชื่อมต่อกับฐานข้อมูล
 const prisma = new PrismaClient();
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> {
-  if (req.method === "GET") {
-    try {
-      // Query ข้อมูลจากฐานข้อมูลโดยใช้ Prisma
-      const totalUsers = await prisma.user.count();
-      const totalLoginUsers = await prisma.user.count(); // สมมติข้อมูลอยู่ในตาราง User
-      const totalSellers = await prisma.userSell.count(); // สมมติข้อมูลอยู่ในตาราง UserSell
+export async function GET() {
+  try {
+    const users = await prisma.user.findMany();
+    const totalUsers = users.length;
+    const totalLoginUsers = users.filter((user) => user.isLoggedIn).length;
+    const totalSellers = users.filter((user) => user.role === "seller").length;
 
-      // ส่งข้อมูลกลับไปยัง client
-      res.status(200).json({
-        totalUsers,
-        totalLoginUsers,
-        totalSellers,
-      });
-    } catch (error) {
-      console.error("Database query error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  } else {
-    // กรณี method อื่นที่ไม่ใช่ GET
-    res.status(405).json({ message: "Method Not Allowed" });
+    return NextResponse.json({ totalUsers, totalLoginUsers, totalSellers, users });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -69,19 +69,26 @@ export default function FromSell() {
             </div>
 
             {/* ประเภทหอพัก */}
-            <div className="mb-4">
-              <label htmlFor="typeDormitory" className="block text-gray-700 font-medium mb-2">
-                ประเภทหอพัก
-              </label>
-              <input
-                type="text"
-                id="typeDormitory"
-                name="typeDormitory"
-                placeholder="ประเภทหอพัก"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                required
-              />
-            </div>
+<div className="mb-4">
+  <label htmlFor="typeDormitory" className="block text-gray-700 font-medium mb-2">
+    ประเภทหอพัก
+  </label>
+  <select
+    id="typeDormitory"
+    name="typeDormitory"
+    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+    required
+  >
+    <option value="" disabled selected>เลือกประเภทหอพัก</option>
+    <option value="หอพักชาย">หอพักชาย</option>
+    <option value="หอพักหญิง">หอพักหญิง</option>
+    <option value="หอพักรวม">หอพักรวม</option>
+    <option value="หอพักรวม">คอนโด</option>
+    <option value="หอพักรวม">บ้านเดี่ยว</option>
+    <option value="หอพักรวม">บ้านแฝด</option>
+  </select>
+</div>
+
 
             {/* ที่อยู่หอพัก */}
             <div className="mb-4">
@@ -128,13 +135,13 @@ export default function FromSell() {
             {/* จำนวนห้อง */}
             <div className="mb-4">
               <label htmlFor="roomNumber" className="block text-gray-700 font-medium mb-2">
-                จำนวนห้องพัก
+                เลขห้องพัก
               </label>
               <input
                 type="number"
                 id="roomNumber"
                 name="roomNumber"
-                placeholder="ระบุจำนวนห้อง"
+                placeholder="ระบุเลขห้องพัก เช่น A103"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
@@ -158,13 +165,13 @@ export default function FromSell() {
             {/* ค่าใช้จ่าย */}
             <div className="mb-4">
               <label htmlFor="priceElectricity" className="block text-gray-700 font-medium mb-2">
-                ค่าไฟ (บาท)
+                ค่าไฟ (หน่วย)
               </label>
               <input
                 type="number"
                 id="priceElectricity"
                 name="priceElectricity"
-                placeholder="ค่าไฟ"
+                placeholder="หน่วยค่าไฟ"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
@@ -172,13 +179,13 @@ export default function FromSell() {
 
             <div className="mb-4">
               <label htmlFor="priceWater" className="block text-gray-700 font-medium mb-2">
-                ค่าน้ำ (บาท)
+                ค่าน้ำ (หน่วย)
               </label>
               <input
                 type="number"
                 id="priceWater"
                 name="priceWater"
-                placeholder="ค่าน้ำ"
+                placeholder="หน่วยค่าน้ำ"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />

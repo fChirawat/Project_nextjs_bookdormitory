@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+interface DashboardStats {
+  totalUsers: number;
+  totalLoginUsers: number;
+  totalSellers: number;
+}
+
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalLoginUsers: 0,
     totalSellers: 0,
@@ -19,9 +25,9 @@ export default function AdminDashboard() {
         console.error("Error fetching dashboard data:", error);
       }
     }
-
     fetchData();
   }, []);
+  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -73,9 +79,11 @@ export default function AdminDashboard() {
         {/* Header */}
         <header className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">Welcome, Admin</h2>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-            Logout
-          </button>
+          <a href="/">
+            <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+              Logout
+            </button>
+          </a>
         </header>
 
         {/* Dashboard Content */}
