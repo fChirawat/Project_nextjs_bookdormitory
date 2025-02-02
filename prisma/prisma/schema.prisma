@@ -48,6 +48,7 @@ model ProfileSell {
   title         String?  // คำนำหน้าชื่อ (นาย, นางสาว, นาง)
   firstName     String
   lastName      String
+  username      String?
   phoneNumber   String?  // เบอร์โทรศัพท์
   email         String?  // อีเมล
   address       String
