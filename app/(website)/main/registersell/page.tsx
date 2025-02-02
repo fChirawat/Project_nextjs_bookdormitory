@@ -1,6 +1,7 @@
 'use client';
 
 import NavRegsell from "@/components/Navragsell";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function RegisterSell() {
@@ -190,6 +191,7 @@ export default function RegisterSell() {
           </div>
 
           {/* Submit Button */}
+          <Link href="/">
           <div>
             <button
               type="submit"
@@ -203,6 +205,7 @@ export default function RegisterSell() {
               {loading ? "Loading..." : "Sign Up"}
             </button>
           </div>
+          </Link>
         </form>
       </div>
     </>
