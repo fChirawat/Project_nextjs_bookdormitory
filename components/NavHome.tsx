@@ -13,7 +13,7 @@ export default function NavHome() {
   return (
     <nav className="bg-pink-200 border-gray-200 ">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <Link href="/main/home" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
             src="/five-stars.png"
             alt="Five Stars"
@@ -36,10 +36,10 @@ export default function NavHome() {
             </li>
             <li>
               <a
-                href="/main/profile"
+                href="/main/confirmprofile"
                 className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-500 md:p-0 dark:text-black md:dark:hover:text-red-500  dark:hover:text-white md:dark:hover:bg-transparent"
               >
-                profile
+                Confirm User
               </a>
             </li>
 

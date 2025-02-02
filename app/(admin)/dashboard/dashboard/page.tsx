@@ -1,169 +1,92 @@
-"use client";  // เพิ่มบรรทัดนี้เพื่อใช้ React hook ใน client-side
-import Link from "next/link";
+"use client"; 
 import { useEffect, useState } from "react";
-import axios from "axios";
 
-export default function Dashboard() {
-  const [users, setUsers] = useState([]);
-  const [sellers, setSellers] = useState([]);
-  const [rooms, setRooms] = useState([]);
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalLoginUsers: 0,
+    totalSellers: 0,
+    users: [],
+  });
 
   useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("/api/dashboard");
+        const data = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    }
+
     fetchData();
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const usersResponse = await axios.get("/api/users");
-      setUsers(usersResponse.data);
-
-      const sellersResponse = await axios.get("/api/usersell");
-      setSellers(sellersResponse.data);
-
-      const roomsResponse = await axios.get("/api/formsell");
-      setRooms(roomsResponse.data);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    }
-  };
-
-  const deleteUser = async (id: number) => {
-    try {
-      await axios.delete(`/api/users/${id}`);
-      fetchData(); // Refresh data
-      alert("ลบผู้ใช้สำเร็จ");
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-    }
-  };
-
-  const deleteSeller = async (id: number) => {
-    try {
-      await axios.delete(`/api/usersell/${id}`);
-      fetchData(); // Refresh data
-      alert("ลบผู้ขายสำเร็จ");
-    } catch (error) {
-      console.error("Failed to delete seller:", error);
-    }
-  };
-
-  const deleteRoom = async (id: number) => {
-    try {
-      await axios.delete(`/api/formsell/${id}`);
-      fetchData(); // Refresh data
-      alert("ลบหอพักสำเร็จ");
-    } catch (error) {
-      console.error("Failed to delete room:", error);
-    }
-  };
-
   return (
-    <div className="p-5">
-      <h1 className="text-2xl font-bold mb-5">Dashboard</h1>
-      <Link href="/dashboard">
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded mr-3"
-        >
-          กลับ Dashbord
-        </button></Link>
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-lg">
+        <div className="p-4 border-b">
+          <h1 className="text-xl font-bold text-gray-800">Admin Panel</h1>
+        </div>
+      </aside>
 
-      {/* Users Section */}
-      <div className="mb-5">
-        <h2 className="text-xl font-bold">ผู้ใช้ทั้งหมด</h2>
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">ชื่อผู้ใช้</th>
-              <th className="border border-gray-300 px-4 py-2">อีเมล</th>
-              <th className="border border-gray-300 px-4 py-2">เบอร์โทร</th>
-              <th className="border border-gray-300 px-4 py-2">การกระทำ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td className="border border-gray-300 px-4 py-2">{user.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.username}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.email}</td>
-                <td className="border border-gray-300 px-4 py-2">{user.phone}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => deleteUser(user.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    ลบ
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 p-6">
+        <header className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-gray-800">Welcome, Admin</h2>
+        </header>
 
-      {/* Sellers Section */}
-      <div className="mb-5">
-        <h2 className="text-xl font-bold">ผู้ขายทั้งหมด</h2>
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">ชื่อผู้ขาย</th>
-              <th className="border border-gray-300 px-4 py-2">การกระทำ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sellers.map((seller) => (
-              <tr key={seller.id}>
-                <td className="border border-gray-300 px-4 py-2">{seller.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{seller.username}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => deleteSeller(seller.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    ลบ
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        {/* Dashboard Cards */}
+        <section className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white shadow-lg rounded-lg p-4">
+            <h3 className="text-lg font-bold text-gray-800">Total Users</h3>
+            <p className="text-2xl text-green-500 font-bold">{stats.totalUsers}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-4">
+            <h3 className="text-lg font-bold text-gray-800">User</h3>
+            <p className="text-2xl text-blue-500 font-bold">{stats.totalLoginUsers}</p>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-4">
+            <h3 className="text-lg font-bold text-gray-800">User Seller</h3>
+            <p className="text-2xl text-yellow-500 font-bold">{stats.totalSellers}</p>
+          </div>
+        </section>
 
-      {/* Dormitories Section */}
-      <div className="mb-5">
-        <h2 className="text-xl font-bold">หอพักทั้งหมด</h2>
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">ชื่อหอพัก</th>
-              <th className="border border-gray-300 px-4 py-2">ที่อยู่</th>
-              <th className="border border-gray-300 px-4 py-2">ราคา</th>
-              <th className="border border-gray-300 px-4 py-2">การกระทำ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rooms.map((room) => (
-              <tr key={room.id}>
-                <td className="border border-gray-300 px-4 py-2">{room.id}</td>
-                <td className="border border-gray-300 px-4 py-2">{room.nameDormitory}</td>
-                <td className="border border-gray-300 px-4 py-2">{room.addressDormitory}</td>
-                <td className="border border-gray-300 px-4 py-2">{room.priceMonth}</td>
-                <td className="border border-gray-300 px-4 py-2">
-                  <button
-                    onClick={() => deleteRoom(room.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    ลบ
-                  </button>
-                </td>
+        {/* Users Table */}
+        <section className="mt-6 bg-white shadow-lg rounded-lg p-4">
+          <h3 className="text-lg font-bold text-gray-800 mb-4">User List</h3>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 px-4 py-2">ID</th>
+                <th className="border border-gray-300 px-4 py-2">Name</th>
+                <th className="border border-gray-300 px-4 py-2">Email</th>
+                <th className="border border-gray-300 px-4 py-2">Role</th>
+                <th className="border border-gray-300 px-4 py-2">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {stats.users.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-100">
+                  <td className="border border-gray-300 px-4 py-2">{user.id}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+                  <td className="border border-gray-300 px-4 py-2">{user.role}</td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {user.isLoggedIn ? (
+                      <span className="text-green-500">Active</span>
+                    ) : (
+                      <span className="text-red-500">Inactive</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      </main>
     </div>
   );
 }
