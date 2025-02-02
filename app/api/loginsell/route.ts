@@ -4,10 +4,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
-const JWT_SECRET = "your_secret_key"; // แนะนำให้เก็บใน environment variables
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret"; // ใช้ env variable
 
 // Login function
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const body = await req.json();
     const { email, password } = body;
@@ -53,7 +53,8 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 3600,
+      maxAge: 3600, // 1 ชั่วโมง
+      path: "/", // ให้ Cookie ใช้ได้ทั้งระบบ
     });
 
     return response;
@@ -76,12 +77,12 @@ export async function DELETE() {
       { status: 200 }
     );
 
-    // ลบ Cookie ที่เก็บ Token
     response.cookies.set("token", "", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 0, // ลบทันที
+      maxAge: 0, // ลบ Cookie ทันที
+      path: "/", // ให้แน่ใจว่า Cookie ถูกลบจากทุกที่
     });
 
     return response;

@@ -43,14 +43,31 @@ model UserSell {
 }
 
 model ProfileSell {
-  id          Int      @id @default(autoincrement())
-  userId      Int      @unique
-  firstName   String
-  lastName    String
-  address     String
-  photoIdCard String
-  userSell    UserSell @relation(fields: [userId], references: [id]) // Linked back to UserSell
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  title         String?  // คำนำหน้าชื่อ (นาย, นางสาว, นาง)
+  firstName     String
+  lastName      String
+  phoneNumber   String?  // เบอร์โทรศัพท์
+  email         String?  // อีเมล
+  address       String
+  bank          String?  // ธนาคาร
+  accountNumber String?  // เลขบัญชี
+  profileImage  String?  // รูปโปรไฟล์
+  photoIdCard   String
+
+  // สถานะการยืนยันตัวตน (pending, approved, rejected)
+  status        String   @default("pending")
+
+  // วันที่สร้างและอัปเดตข้อมูล
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // ความสัมพันธ์กับ UserSell
+  userSell      UserSell @relation(fields: [userId], references: [id])
 }
+
+
 
 model FormSell {
   id                Int      @id @default(autoincrement())
