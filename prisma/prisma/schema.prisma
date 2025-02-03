@@ -45,26 +45,20 @@ model UserSell {
 model ProfileSell {
   id            Int      @id @default(autoincrement())
   userId        Int      @unique
-  title         String?  // คำนำหน้าชื่อ (นาย, นางสาว, นาง)
+  title         String?  @default("")
   firstName     String
   lastName      String
-  username      String?
-  phoneNumber   String?  // เบอร์โทรศัพท์
-  email         String?  // อีเมล
+  username      String?  @default("")
+  phoneNumber   String?  @default("")
+  email         String?  @default("")
   address       String
-  bank          String?  // ธนาคาร
-  accountNumber String?  // เลขบัญชี
-  profileImage  String?  // รูปโปรไฟล์
+  bank          String?  @default("")
+  accountNumber String?  @default("")
+  profileImage  String?  @default("")
   photoIdCard   String
-
-  // สถานะการยืนยันตัวตน (pending, approved, rejected)
   status        String   @default("pending")
-
-  // วันที่สร้างและอัปเดตข้อมูล
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  // ความสัมพันธ์กับ UserSell
   userSell      UserSell @relation(fields: [userId], references: [id])
 }
 

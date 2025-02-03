@@ -25,6 +25,7 @@ export async function GET(req: Request) {
     const user = await prisma.userSell.findUnique({
       where: { id: decoded.id },
       select: {
+        id: true,
         username: true,
         email: true,
         phone: true,

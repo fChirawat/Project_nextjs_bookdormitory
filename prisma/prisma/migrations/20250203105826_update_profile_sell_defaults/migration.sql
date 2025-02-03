@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE `profilesell` ADD COLUMN `username` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `accountNumber` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `bank` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `email` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `phoneNumber` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `profileImage` VARCHAR(191) NULL DEFAULT '',
+    MODIFY `title` VARCHAR(191) NULL DEFAULT '';
