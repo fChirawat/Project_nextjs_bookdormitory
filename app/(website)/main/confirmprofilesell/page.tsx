@@ -114,6 +114,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       status: "pending",
   };
 
+<<<<<<< Updated upstream
   console.log("Submitting payload:", JSON.stringify(payload));
 
   try {
@@ -142,6 +143,55 @@ const handleSubmit = async (e: React.FormEvent) => {
 };
 
 
+=======
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    // ดึง Token จาก localStorage หรือ sessionStorage
+    const token = localStorage.getItem('token') || ''; 
+  
+    if (!token) {
+      console.error('Token ไม่มี หรือหมดอายุ');
+      return;
+    }
+  
+    try {
+      const formData = {
+        title,
+        firstname,
+        lastname,
+        username,
+        email,
+        phoneNumber,
+        address,
+        bank,
+        accountNumber,
+        profileImage,
+        idCardImage
+      };
+  
+      // ส่งข้อมูลไปยัง API ด้วย Authorization header
+      const response = await fetch('/api/confirmprofilesell', {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // ใส่ Token ใน Authorization header
+        },
+        credentials: 'include', // ถ้าจำเป็น
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        console.log('ข้อมูลถูกส่งสำเร็จ');
+      } else {
+        console.error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์:', data.message);
+      }
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดขณะส่งข้อมูล:', error);
+    }
+  };
+>>>>>>> Stashed changes
 
   return (
     <>
