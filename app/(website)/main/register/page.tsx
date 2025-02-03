@@ -189,7 +189,7 @@ export default function Register() {
             )}
           </div>
 
-          <Link href="/">
+          
           <div>
             <button
               type="submit"
@@ -198,7 +198,7 @@ export default function Register() {
             >
               {loading ? "กำลังดำเนินการ..." : "ลงทะเบียน"}
             </button>
-          </div></Link>
+          </div>
         </form>
       </div>
     </div>
