@@ -57,7 +57,12 @@ export default function RegisterSell() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          userName: formData.userName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        }),
       });
 
       const data = await response.json();
@@ -191,7 +196,7 @@ export default function RegisterSell() {
           </div>
 
           {/* Submit Button */}
-          <Link href="/">
+          
           <div>
             <button
               type="submit"
@@ -205,7 +210,7 @@ export default function RegisterSell() {
               {loading ? "Loading..." : "Sign Up"}
             </button>
           </div>
-          </Link>
+          
         </form>
       </div>
     </>
