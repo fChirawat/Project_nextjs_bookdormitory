@@ -1,12 +1,17 @@
 'use client';
 import Navconfile from "@/components/Navconfile";
 import { useState } from 'react';
+import { text } from "stream/consumers";
 
 export default function ConframProfile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [title, setTitle] = useState<string>("");
-  const [firstname, setFirstname] = useState<string>("");
-  const [lastname, setLastname] = useState<string>("");
+  const [title, setTitle] = useState<string>('');
+  const [firstname, setFirstname] = useState<string>('');
+  const [lastname, setLastname] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [contactInfo, setContactInfo] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -19,10 +24,32 @@ export default function ConframProfile() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ title, firstname, lastname, profileImage });
+
+    try {
+      const response = await fetch("/api/comfrimprofile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          title, firstname, lastname, email, phoneNumber, contactInfo, address, profileImage 
+        }),
+      });
+
+      const text = await response.text();
+      console.log("📩 API Response:", text);
+
+      try {
+        const data = JSON.parse(text); // Try parsing as JSON
+        console.log("📩 API Response:", data);
+      } catch (error) {
+        console.error("🔥 JSON Parsing Error:", error);
+      }
+    } catch (error) {
+      console.error("🔥 Fetch Error:", error);
+    }
   };
+
 
   return (
     <>
@@ -33,6 +60,7 @@ export default function ConframProfile() {
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             ยืนยันตัวตนฝ่ายผู้ขาย
           </h2>
+
           <div className="avatar placeholder flex flex-col items-center gap-4 mt-4">
             <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 relative">
               <input
@@ -54,23 +82,8 @@ export default function ConframProfile() {
             </div>
           </div>
 
-          {/* First Name */}
-          <div className="mb-4">
-              <label htmlFor="username" className="block text-gray-700 font-medium mb-2">
-                username
-              </label>
-              <input
-                type="text"
-                id="username"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
-                placeholder="username"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                required
-              />
-            </div>
           <form onSubmit={handleSubmit}>
-            {/* คำนำหน้า */}
+            {/* Title */}
             <div className="mb-4">
               <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                 คำนำหน้า
@@ -122,8 +135,6 @@ export default function ConframProfile() {
               />
             </div>
 
-            
-
             {/* Email */}
             <div className="mb-4">
               <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
@@ -132,7 +143,8 @@ export default function ConframProfile() {
               <input
                 type="email"
                 id="emailsell"
-                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
@@ -147,9 +159,10 @@ export default function ConframProfile() {
               <input
                 type="text"
                 id="phoneNumbersell"
-                name="phoneNumber"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="เบอร์โทรศัพท์"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
@@ -162,27 +175,29 @@ export default function ConframProfile() {
               <input
                 type="text"
                 id="contactInfo"
-                name="contactInfo"
+                value={contactInfo}
+                onChange={(e) => setContactInfo(e.target.value)}
                 placeholder="Facebook / Line"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
 
-            {/* ที่อยู่ */}
+            {/* Address */}
             <div className="mb-4">
               <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
                 ที่อยู่
               </label>
               <textarea
                 id="address"
-                name="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="ระบุที่อยู่"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
               ></textarea>
             </div>
 
-            {/* ปุ่มส่งฟอร์ม */}
+            {/* Submit Button */}
             <div className="mb-4">
               <button
                 type="submit"
@@ -197,3 +212,4 @@ export default function ConframProfile() {
     </>
   );
 }
+
