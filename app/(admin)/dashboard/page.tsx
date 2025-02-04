@@ -105,6 +105,7 @@ export default function AdminDashboard() {
             <h3 className="text-lg font-bold text-gray-800">User Seller</h3>
             <p className="text-2xl text-yellow-500 font-bold">{stats.totalSellers}</p>
           </div>
+          
         </section>
       </main>
     </div>
