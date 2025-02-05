@@ -97,57 +97,63 @@ const handleSubmit = async (e: React.FormEvent) => {
       return;
   }
 
-  // 🔹 Prepare payload
-  const payload = {
-      userId,
-      title,
-      firstName: firstname,
-      lastName: lastname,
-      username,
-      email,
-      phoneNumber,
-      address,
-      bank,
-      accountNumber,
-      profileImage,  // Cloudinary URL or Base64
-      photoIdCard: idCardImage,  // Cloudinary URL or Base64
-      status: "pending",
-  };
+  // 🔹 Prepare FormData payload
+  const formData = new FormData();
+  formData.append("userId", String(userId));
+  formData.append("title", title);
+  formData.append("firstName", firstname);
+  formData.append("lastName", lastname);
+  formData.append("username", username);
+  formData.append("email", email);
+  formData.append("phoneNumber", phoneNumber);
+  formData.append("address", address);
+  formData.append("bank", bank);
+  formData.append("accountNumber", accountNumber);
+  formData.append("status", "pending");
 
-  console.log("Submitting payload:", payload); // ✅ Log request before sending
+  // 🔹 Append images if available
+  if (profileImage) {
+    const profileFile = await fetch(profileImage).then(res => res.blob());
+    formData.append("profileImage", profileFile, "profile.jpg");
+  }
+
+  if (idCardImage) {
+    const idCardFile = await fetch(idCardImage).then(res => res.blob());
+    formData.append("photoIdCard", idCardFile, "idcard.jpg");
+  }
+
+  console.log("Submitting FormData:", formData); // ✅ Log request before sending
 
   try {
-      const response = await fetch("/api/profilesell", {
-          method: "POST",
-          headers: { 
-              "Content-Type": "application/json"  // ✅ Ensure JSON Content-Type
-          },
-          body: JSON.stringify(payload),  // ✅ Convert object to JSON string
-      });
+    const response = await fetch("/api/profilesell", {
+      method: "POST",
+      body: formData, // ✅ Sending as FormData
+    });
 
-      console.log("Response status:", response.status); // ✅ Log response status
-      const responseText = await response.text();
-      console.log("Raw response text:", responseText); // ✅ Log raw response
+    console.log("Response status:", response.status); // ✅ Log response status
 
-      if (!response.ok) {
-          let errorData;
-          try {
-              errorData = JSON.parse(responseText);
-          } catch {
-              errorData = { error: "Unknown error" };
-          }
-          throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
+    const responseText = await response.text();
+    console.log("Raw response text:", responseText); // ✅ Log raw response
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch {
+        errorData = { error: "Unknown error" };
       }
+      throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
+    }
 
-      const data = JSON.parse(responseText);
-      alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-      console.log("Profile created:", data);
+    alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    console.log("Profile created successfully!");
 
   } catch (error) {
-      console.error("Profile submission error:", error);
-      alert("Error submitting profile: " + error.message);
+    console.error("Profile submission error:", error);
+    alert("Error submitting profile: " + error.message);
   }
 };
+
 
 
   return (
