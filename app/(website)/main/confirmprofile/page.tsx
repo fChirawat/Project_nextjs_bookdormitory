@@ -28,7 +28,7 @@ export default function ConframProfile() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/comfrimprofile", {
+      const response = await fetch("/api/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -49,6 +49,9 @@ export default function ConframProfile() {
       console.error("🔥 Fetch Error:", error);
     }
   };
+
+
+  
 
 
   return (

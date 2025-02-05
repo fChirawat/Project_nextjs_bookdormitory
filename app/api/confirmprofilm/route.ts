@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { title, firstname, lastname, email, phoneNumber, contactInfo, address, profileImage } = req.body;
 
-      const newUser = await prisma.ConframProfile.create({
+      const newUser = await prisma.profile.create({
         data: {
           title,
           firstname,
