@@ -6,68 +6,88 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        console.log("Received request body:", body);
-
-        if (!body || Object.keys(body).length === 0) {
-            return NextResponse.json({ error: "Empty request body" }, { status: 400 });
+        // ✅ ตรวจสอบว่า Request มี `multipart/form-data` หรือไม่
+        if (!req.headers.get("content-type")?.includes("multipart/form-data")) {
+            return NextResponse.json({ error: "Invalid Content-Type, must be multipart/form-data" }, { status: 400 });
         }
 
-        let {
-            userId, title, firstName, lastName, username,
-            phoneNumber, email, address, bank, accountNumber,
-            profileImage, photoIdCard, status
-        } = body;
+        // ✅ อ่าน `FormData`
+        const formData = await req.formData();
 
-        // ✅ Convert userId to number (Prisma expects an integer)
-        userId = Number(userId);
-        if (isNaN(userId)) {
-            return NextResponse.json({ error: "Invalid userId" }, { status: 400 });
-        }
+        console.log("FormData Received:", formData);
 
-        // ✅ Ensure required fields are present
-        if (!userId || !firstName || !lastName || !address || !photoIdCard) {
+        // 🔹 ดึงข้อมูลจาก `FormData`
+        const userId = Number(formData.get("userId"));
+        const title = formData.get("title") as string;
+        const firstName = formData.get("firstName") as string;
+        const lastName = formData.get("lastName") as string;
+        const username = formData.get("username") as string;
+        const phoneNumber = formData.get("phoneNumber") as string;
+        const email = formData.get("email") as string;
+        const address = formData.get("address") as string;
+        const bank = formData.get("bank") as string;
+        const accountNumber = formData.get("accountNumber") as string;
+        const status = formData.get("status") as string || "pending";
+
+        if (!userId || !firstName || !lastName || !address) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
-        // ✅ Default missing fields to empty string
-        title = title || "";
-        username = username || "";
-        phoneNumber = phoneNumber || "";
-        email = email || "";
-        bank = bank || "";
-        accountNumber = accountNumber || "";
-        profileImage = profileImage || "";
-        photoIdCard = photoIdCard || "";
-        status = status || "pending"; // Default status
+        // 🔹 ตรวจสอบและอัปโหลดไฟล์ภาพ
+        let profileImage = "";
+        let photoIdCard = "";
 
-        // 🔹 Save to MySQL (Prisma)
-        try {
-            const newProfile = await prisma.profileSell.create({
-                data: {
-                    userId,
-                    title,
-                    firstName,
-                    lastName,
-                    username,
-                    phoneNumber,
-                    email,
-                    address,
-                    bank,
-                    accountNumber,
-                    profileImage,
-                    photoIdCard,
-                    status,
-                },
+        const uploadImage = async (file: File, folder: string) => {
+            const buffer = Buffer.from(await file.arrayBuffer());
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    { folder },
+                    (error, result) => {
+                        if (error) {
+                            console.error(`Failed to upload ${folder}:`, error);
+                            reject(error);
+                        } else {
+                            resolve(result?.secure_url);
+                        }
+                    }
+                ).end(buffer);
             });
+        };
 
-            console.log("Database Insert Success:", newProfile);
-            return NextResponse.json(newProfile, { status: 201 });
+        const profileImageFile = formData.get("profileImage") as File;
+        const idCardImageFile = formData.get("photoIdCard") as File;
 
-        } catch (dbError) {
-            console.error("Database Insert Error:", dbError);
-            return NextResponse.json({ error: "Failed to save profile", details: dbError.message }, { status: 500 });
+        if (profileImageFile && profileImageFile.size > 0) {
+            profileImage = await uploadImage(profileImageFile, "profile_pictures") as string;
         }
+
+        if (idCardImageFile && idCardImageFile.size > 0) {
+            photoIdCard = await uploadImage(idCardImageFile, "id_cards") as string;
+        } else {
+            return NextResponse.json({ error: "ID Card image is required" }, { status: 400 });
+        }
+
+        // 🔹 บันทึกข้อมูลลงฐานข้อมูล
+        const newProfile = await prisma.profileSell.create({
+            data: {
+                userId,
+                title,
+                firstName,
+                lastName,
+                username,
+                phoneNumber,
+                email,
+                address,
+                bank,
+                accountNumber,
+                profileImage,
+                photoIdCard,
+                status,
+            },
+        });
+
+        console.log("Profile created successfully:", newProfile);
+        return NextResponse.json(newProfile, { status: 201 });
 
     } catch (error) {
         console.error("Unexpected API Error:", error);
