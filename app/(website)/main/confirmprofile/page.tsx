@@ -1,7 +1,12 @@
 'use client';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { useState, useEffect } from 'react';
+import Cookies from 'js-cookie'; // ✅ ใช้จัดการ Cookie
 import Navconfile from "@/components/Navconfile";
-import { useState } from 'react';
-import { text } from "stream/consumers";
+
+Cookies.set('authToken', 'your-token-here', { expires: 7 }); // กำหนดเวลาในการหมดอายุของ Cookie
+
+
 
 export default function ConframProfile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -12,52 +17,82 @@ export default function ConframProfile() {
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [contactInfo, setContactInfo] = useState<string>('');
   const [address, setAddress] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  // ✅ ดึง Token จาก Cookie ตอนโหลดหน้า
+  useEffect(() => {
+    const savedToken = Cookies.get('authToken'); 
+    console.log("🔍 Token ที่ดึงได้จาก Cookie:", savedToken); // ✅ เช็ค Token
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, []);
+  
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setProfileImage(reader.result as string);
+        const base64String = reader.result as string;
+        setProfileImage(base64String);
       };
       reader.readAsDataURL(file);
     }
   };
 
+  // ✅ ฟังก์ชันส่งข้อมูลไป API พร้อม Token
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    if (!token) {
+      alert('❌ ไม่พบ Token โปรดเข้าสู่ระบบใหม่');
+      return;
+    }
+  
+    setLoading(true);
+    console.time("⏳ API Response Time");
+  
     try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          title, firstname, lastname, email, phoneNumber, contactInfo, address, profileImage 
+      const response = await fetch('/app/api/confirmprofilm/route', { // ✅ แก้ชื่อ API
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // ✅ ส่ง Token ไปด้วย
+        },
+        body: JSON.stringify({
+          title,
+          firstname,
+          lastname,
+          email,
+          phoneNumber,
+          contactInfo,
+          address,
+          profileImage,
         }),
       });
-
-      const text = await response.text();
-      console.log("📩 API Response:", text);
-
-      try {
-        const data = JSON.parse(text); // Try parsing as JSON
-        console.log("📩 API Response:", data);
-      } catch (error) {
-        console.error("🔥 JSON Parsing Error:", error);
+  
+      console.timeEnd("⏳ API Response Time");
+  
+      const data = await response.json();
+      if (response.ok) {
+        alert('✅ บันทึกข้อมูลสำเร็จ!');
+      } else {
+        alert(`❌ เกิดข้อผิดพลาด: ${data.error}`);
       }
     } catch (error) {
       console.error("🔥 Fetch Error:", error);
+      alert('❌ ไม่สามารถเชื่อมต่อ API');
+    } finally {
+      setLoading(false);
     }
   };
-
-
   
 
 
   return (
     <>
       <Navconfile />
-
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
@@ -70,13 +105,10 @@ export default function ConframProfile() {
                 type="file"
                 className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
                 onChange={handleImageUpload}
+                accept="image/*"
               />
               {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
+                <img src={profileImage} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-gray-400 text-sm flex items-center justify-center h-full">
                   อัปโหลดรูป
@@ -85,18 +117,17 @@ export default function ConframProfile() {
             </div>
           </div>
 
+          {/* ✅ ฟอร์มส่งข้อมูล */}
           <form onSubmit={handleSubmit}>
-            {/* Title */}
             <div className="mb-4">
               <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
                 คำนำหน้า
               </label>
               <select
-                id="titlesell"
-                name="title"
+                id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
                 required
               >
                 <option value="" disabled>เลือกคำนำหน้า</option>
@@ -106,108 +137,81 @@ export default function ConframProfile() {
               </select>
             </div>
 
-            {/* First Name */}
             <div className="mb-4">
-              <label htmlFor="firstnamesell" className="block text-gray-700 font-medium mb-2">
-                ชื่อจริง
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">ชื่อจริง</label>
               <input
                 type="text"
-                id="firstnamesell"
                 value={firstname}
                 onChange={(e) => setFirstname(e.target.value)}
-                placeholder="ชื่อจริง"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
 
-            {/* Last Name */}
             <div className="mb-4">
-              <label htmlFor="lastnamesell" className="block text-gray-700 font-medium mb-2">
-                นามสกุล
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">นามสกุล</label>
               <input
                 type="text"
-                id="lastnamesell"
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
-                placeholder="นามสกุล"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
 
-            {/* Email */}
             <div className="mb-4">
-              <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-                Email
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">Email</label>
               <input
                 type="email"
-                id="emailsell"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
 
-            {/* Phone Number */}
             <div className="mb-4">
-              <label htmlFor="phoneNumber" className="block text-gray-700 font-medium mb-2">
-                เบอร์โทรศัพท์
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">เบอร์โทรศัพท์</label>
               <input
                 type="text"
-                id="phoneNumbersell"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="เบอร์โทรศัพท์"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500"
                 required
               />
             </div>
 
-            {/* Contact Info */}
             <div className="mb-4">
-              <label htmlFor="contactInfo" className="block text-gray-700 font-medium mb-2">
-                ข้อมูลที่สามารถติดต่อได้
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">ข้อมูลที่สามารถติดต่อได้</label>
               <input
                 type="text"
-                id="contactInfo"
                 value={contactInfo}
                 onChange={(e) => setContactInfo(e.target.value)}
-                placeholder="Facebook / Line"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-green-100"
                 required
               />
             </div>
 
-            {/* Address */}
             <div className="mb-4">
-              <label htmlFor="address" className="block text-gray-700 font-medium mb-2">
-                ที่อยู่
-              </label>
+              <label className="block text-gray-700 font-medium mb-2">ที่อยู่</label>
               <textarea
-                id="address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="ระบุที่อยู่"
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 bg-green-100"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-pink-500 bg-green-100"
               ></textarea>
             </div>
 
-            {/* Submit Button */}
             <div className="mb-4">
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              >
-                ส่งข้อมูลยืนยันตัวตน
-              </button>
+            <button
+  type="submit"
+  className={`w-full py-2 px-4 rounded-lg text-white ${
+    loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+  }`}
+  disabled={loading}
+>
+  {loading ? "⏳ กำลังส่งข้อมูล..." : "ส่งข้อมูลยืนยันตัวตน"}
+</button>
+
             </div>
           </form>
         </div>
@@ -215,4 +219,3 @@ export default function ConframProfile() {
     </>
   );
 }
-
