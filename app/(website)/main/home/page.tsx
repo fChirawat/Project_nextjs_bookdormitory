@@ -1,7 +1,6 @@
-import Navbar from '@/components/Navbar';
-import NavHome from '@/components/NavHome';
-import React from 'react';
-
+import Link from "next/link";
+import NavHome from "@/components/NavHome";
+// Card Component
 // Card Component
 const Card = ({
   mainImage,
@@ -14,9 +13,9 @@ const Card = ({
   priceElectricity,
 }) => {
   return (
-    <div className="border rounded-lg shadow-md p-4 flex w-full">
+    <div className="border rounded-lg shadow-md p-4 flex flex-col md:flex-row w-full max-w-4xl mx-auto mb-6">
       {/* Main and Secondary Images */}
-      <div className="flex w-1/3">
+      <div className="flex w-full md:w-1/3 mb-4 md:mb-0">
         {/* Main Image */}
         <div className="flex flex-col items-center w-2/3 border border-gray-300 rounded-lg p-2">
           <img
@@ -66,12 +65,12 @@ const Card = ({
 
         {/* Buttons */}
         <div className="flex flex-col items-end space-y-2 mt-6">
-          <button className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg shadow w-40">
+          <Link href="/dormitory-detail" className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg shadow w-40 text-center">
             รายละเอียด
-          </button>
-          <button className="bg-gray-400 text-white px-6 py-3 rounded-lg shadow w-40">
+          </Link>
+          <Link href="/book-dormitory" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow w-40 text-center">
             จองหอพัก
-          </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -91,10 +90,7 @@ export default function Home() {
         {/* Card Component Example */}
         <Card
           mainImage="/main-dormitory.jpg"
-          secondaryImages={[
-            "/secondary1.jpg",
-            "/secondary2.jpg",
-          ]}
+          secondaryImages={["/secondary1.jpg", "/secondary2.jpg"]}
           nameDormitory="หอพักตัวอย่าง"
           typeDormitory="คอนโด"
           distanceDormitory="800 เมตร"
@@ -105,13 +101,10 @@ export default function Home() {
 
         <Card
           mainImage="/main-dormitory.jpg"
-          secondaryImages={[
-            "/secondary1.jpg",
-            "/secondary2.jpg",
-          ]}
+          secondaryImages={["/secondary1.jpg", "/secondary2.jpg"]}
           nameDormitory="หอพักที่ 2"
           typeDormitory="คอนโด"
-          distanceDormitory ="1800 เมตร"
+          distanceDormitory="1800 เมตร"
           priceMonth={5500}
           roomDeposit={5000}
           priceElectricity={20}
