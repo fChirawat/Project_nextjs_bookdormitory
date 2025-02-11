@@ -1,5 +1,4 @@
 'use client';
-import { NextApiRequest, NextApiResponse } from 'next';
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie'; // ✅ ใช้จัดการ Cookie
 import Navconfile from "@/components/Navconfile";
@@ -9,6 +8,7 @@ Cookies.set('authToken', 'your-token-here', { expires: 7 }); // กำหนด�
 
 
 export default function ConframProfile() {
+  const [userId, setUserId] = useState<number | null>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('');
   const [firstname, setFirstname] = useState<string>('');
@@ -18,75 +18,161 @@ export default function ConframProfile() {
   const [contactInfo, setContactInfo] = useState<string>('');
   const [address, setAddress] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [token, setToken] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // ✅ ดึง Token จาก Cookie ตอนโหลดหน้า
   useEffect(() => {
-    const savedToken = Cookies.get('authToken'); 
-    console.log("🔍 Token ที่ดึงได้จาก Cookie:", savedToken); // ✅ เช็ค Token
-    if (savedToken) {
-      setToken(savedToken);
-    }
+    setIsClient(true); // Prevents hydration error
   }, []);
-  
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64String = reader.result as string;
-        setProfileImage(base64String);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/usersell", {
+          method: "GET",
+          credentials: "include",
+        });
 
-  // ✅ ฟังก์ชันส่งข้อมูลไป API พร้อม Token
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token) {
-      alert('❌ ไม่พบ Token โปรดเข้าสู่ระบบใหม่');
-      return;
-    }
-  
-    setLoading(true);
-    console.time("⏳ API Response Time");
-  
-    try {
-      const response = await fetch('/app/api/confirmprofilm/route', { // ✅ แก้ชื่อ API
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // ✅ ส่ง Token ไปด้วย
-        },
-        body: JSON.stringify({
-          title,
-          firstname,
-          lastname,
-          email,
-          phoneNumber,
-          contactInfo,
-          address,
-          profileImage,
-        }),
-      });
-  
-      console.timeEnd("⏳ API Response Time");
-  
-      const data = await response.json();
-      if (response.ok) {
-        alert('✅ บันทึกข้อมูลสำเร็จ!');
-      } else {
-        alert(`❌ เกิดข้อผิดพลาด: ${data.error}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          setUserId(data.user.id || null);
+          setLastname(data.user.lastname || "ไม่มีข้อมูล");
+          setEmail(data.user.email || "ไม่มีข้อมูล");
+          setPhoneNumber(data.user.phone || "ไม่มีข้อมูล");
+        } else {
+          setError("Error fetching user: " + data.message);
+        }
+      } catch (error) {
+        setError("Error fetching user data");
       }
-    } catch (error) {
-      console.error("🔥 Fetch Error:", error);
-      alert('❌ ไม่สามารถเชื่อมต่อ API');
-    } finally {
-      setLoading(false);
+    };
+
+    fetchUserData();
+  }, []);
+
+
+
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setImage: React.Dispatch<React.SetStateAction<string | null>>,
+    folder: string
+) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+        const base64Image = reader.result as string;
+
+        try {
+            const response = await fetch("/api/upload", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: base64Image, folder }),
+            });
+
+            // Ensure response is not empty
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+                throw new Error(errorData.error || "Upload failed");
+            }
+
+            const data = await response.json();
+            setImage(data.imageUrl); // ✅ Save Cloudinary URL
+
+        } catch (error) {
+            console.error("Upload error:", error);
+            alert("Failed to upload image.");
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // 🔍 Log ค่าเพื่อการตรวจสอบก่อน submit
+  console.log("🚀 ตรวจสอบค่าก่อน submit:", {
+    userId,
+    firstname,
+    lastname,
+    address,
+    title,
+    email,
+    phoneNumber,
+    contactInfo,
+  });
+
+  // 🔹 Ensure required fields are filled
+  if (
+    !userId || // ตรวจสอบ userId ว่าเป็น null หรือไม่
+    !firstname.trim() || // ตรวจสอบชื่อว่ามีข้อมูลหรือไม่
+    !lastname.trim() || // ตรวจสอบนามสกุลว่ามีข้อมูลหรือไม่
+    !address.trim() || // ตรวจสอบที่อยู่ว่ามีข้อมูลหรือไม่
+    !title.trim() || // ตรวจสอบคำนำหน้าว่ามีข้อมูลหรือไม่
+    !email.trim() || // ตรวจสอบอีเมลว่ามีข้อมูลหรือไม่
+    !phoneNumber.trim() || // ตรวจสอบเบอร์โทรศัพท์ว่ามีข้อมูลหรือไม่
+    !contactInfo.trim() // ตรวจสอบข้อมูลติดต่อว่ามีข้อมูลหรือไม่
+  ) {
+    alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
+    return;
+  }
+
+  console.log("✅ ข้อมูลครบทุกช่อง! กำลังส่ง API...");
+
+  // 🔹 Prepare FormData payload
+  const formData = new FormData();
+  formData.append("userId", String(userId));
+  formData.append("title", title);
+  formData.append("firstName", firstname);
+  formData.append("lastName", lastname);
+  formData.append("email", email);
+  formData.append("phoneNumber", phoneNumber);
+  formData.append("address", address);
+  formData.append("contactInfo", contactInfo);
+  formData.append("status", "pending");
+
+  if (profileImage) {
+    const profileFile = await fetch(profileImage).then((res) => res.blob());
+    formData.append("profileImage", profileFile, "profile.jpg");
+  }
+
+  console.log("Submitting FormData:", formData); // ✅ Log request before sending
+
+  try {
+    const response = await fetch("/api/confirmprofile", {
+      method: "POST",
+      body: formData, // ✅ ส่ง FormData
+    });
+
+    console.log("Response status:", response.status); // ✅ Log response status
+
+    const responseText = await response.text();
+    console.log("Raw response text:", responseText); // ✅ Log raw response
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = JSON.parse(responseText);
+      } catch {
+        errorData = { error: "Unknown error" };
+      }
+      throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
     }
-  };
+
+    alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    console.log("Profile created successfully!");
+  } catch (error) {
+    console.error("Profile submission error:", error);
+    alert("Error submitting profile: " + error.message);
+  }
+};
+
   
 
 
@@ -104,7 +190,7 @@ export default function ConframProfile() {
               <input
                 type="file"
                 className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-                onChange={handleImageUpload}
+                onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
                 accept="image/*"
               />
               {profileImage ? (

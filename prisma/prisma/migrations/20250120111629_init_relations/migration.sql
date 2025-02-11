@@ -16,6 +16,7 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Profile` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    
     `userId` INTEGER NOT NULL,
     `firstName` VARCHAR(191) NOT NULL,
     `lastName` VARCHAR(191) NOT NULL,

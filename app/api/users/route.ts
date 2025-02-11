@@ -1,32 +1,42 @@
+import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
+import jwt from "jsonwebtoken";
 
-// สร้างการเชื่อมต่อกับฐานข้อมูล
 const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> {
-  if (req.method === "GET") {
-    try {
-      // Query ข้อมูลจากฐานข้อมูลโดยใช้ Prisma
-      const totalUsers = await prisma.user.count();
-      const totalLoginUsers = await prisma.user.count(); // สมมติข้อมูลอยู่ในตาราง User
-      const totalSellers = await prisma.userSell.count(); // สมมติข้อมูลอยู่ในตาราง UserSell
+export async function GET(req: Request) {
+  try {
+    const cookies = req.headers.get("cookie");
+    const token = cookies
+      ?.split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1];
 
-      // ส่งข้อมูลกลับไปยัง client
-      res.status(200).json({
-        totalUsers,
-        totalLoginUsers,
-        totalSellers,
-      });
-    } catch (error) {
-      console.error("Database query error:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    if (!token) {
+      return NextResponse.json({ success: false, message: "ไม่พบ Token" }, { status: 401 });
     }
-  } else {
-    // กรณี method อื่นที่ไม่ใช่ GET
-    res.status(405).json({ message: "Method Not Allowed" });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET) as { id: number };
+    } catch (err) {
+      return NextResponse.json({ success: false, message: "Token ไม่ถูกต้องหรือหมดอายุ" }, { status: 401 });
+    }
+
+    const user = await prisma.userSell.findUnique({
+      where: { id: decoded.id },
+      select: { id: true, username: true, email: true, phone: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ success: false, message: "ไม่พบผู้ใช้ในระบบ" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, user }, { status: 200 });
+
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return NextResponse.json({ success: false, message: "เกิดข้อผิดพลาดในเซิร์ฟเวอร์" }, { status: 500 });
   }
 }
