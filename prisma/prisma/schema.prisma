@@ -46,7 +46,7 @@ model UserSell {
   phone     String       @unique
   password  String
   profile   ProfileSell? // Linked to ProfileSell
-  formSells FormSell[]   // Linked to FormSell
+  formSells FormSell[] // Linked to FormSell
 
   @@unique([username, email, phone])
 }

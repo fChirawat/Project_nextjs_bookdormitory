@@ -114,40 +114,37 @@ const handleSubmit = async (e: React.FormEvent) => {
       status: "pending",
   };
 
-  console.log("Submitting payload:", payload); // ✅ Log request before sending
+  const formData = new FormData();
+  Object.keys(payload).forEach(key => {
+      formData.append(key, payload[key]);
+  });
 
   try {
-      const response = await fetch("/api/profilesell", {
-          method: "POST",
-          headers: { 
-              "Content-Type": "application/json"  // ✅ Ensure JSON Content-Type
-          },
-          body: JSON.stringify(payload),  // ✅ Convert object to JSON string
-      });
+    const response = await fetch("/api/profilesell", {
+      method: "POST",
+      body: formData, // ✅ Sending as FormData
+    });
 
-      console.log("Response status:", response.status); // ✅ Log response status
-      const responseText = await response.text();
-      console.log("Raw response text:", responseText); // ✅ Log raw response
+    if (!response.ok) {
+        let errorData;
+        try {
+            errorData = await response.json();
+        } catch {
+            errorData = { error: "Unknown error" };
+        }
+        throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
+    }
 
-      if (!response.ok) {
-          let errorData;
-          try {
-              errorData = JSON.parse(responseText);
-          } catch {
-              errorData = { error: "Unknown error" };
-          }
-          throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
-      }
-
-      const data = JSON.parse(responseText);
-      alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-      console.log("Profile created:", data);
+    const data = await response.json();
+    alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    console.log("Profile created:", data);
 
   } catch (error) {
-      console.error("Profile submission error:", error);
-      alert("Error submitting profile: " + error.message);
+    console.error("Profile submission error:", error);
+    alert("Error submitting profile: " + error.message);
   }
 };
+
 
 
   return (
