@@ -91,13 +91,13 @@ export default function Conframsell() {
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // ✅ Validate required fields
+  // 🔹 Ensure required fields are filled
   if (!userId || !firstname || !lastname || !address || !bank || !accountNumber || !idCardImage) {
       alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
       return;
   }
 
-  // ✅ Prepare payload
+  // 🔹 Prepare payload
   const payload = {
       userId,
       title,
@@ -114,8 +114,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       status: "pending",
   };
 
-<<<<<<< Updated upstream
-  console.log("Submitting payload:", JSON.stringify(payload));
+  console.log("Submitting payload:", payload); // ✅ Log request before sending
 
   try {
       const response = await fetch("/api/profilesell", {
@@ -126,15 +125,23 @@ const handleSubmit = async (e: React.FormEvent) => {
           body: JSON.stringify(payload),  // ✅ Convert object to JSON string
       });
 
-      console.log("Response status:", response.status);
-      const responseData = await response.json();
-      console.log("Response data:", responseData);
+      console.log("Response status:", response.status); // ✅ Log response status
+      const responseText = await response.text();
+      console.log("Raw response text:", responseText); // ✅ Log raw response
 
       if (!response.ok) {
-          throw new Error(responseData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
+          let errorData;
+          try {
+              errorData = JSON.parse(responseText);
+          } catch {
+              errorData = { error: "Unknown error" };
+          }
+          throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
       }
 
+      const data = JSON.parse(responseText);
       alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+      console.log("Profile created:", data);
 
   } catch (error) {
       console.error("Profile submission error:", error);
@@ -142,56 +149,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-
-=======
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    // ดึง Token จาก localStorage หรือ sessionStorage
-    const token = localStorage.getItem('token') || ''; 
-  
-    if (!token) {
-      console.error('Token ไม่มี หรือหมดอายุ');
-      return;
-    }
-  
-    try {
-      const formData = {
-        title,
-        firstname,
-        lastname,
-        username,
-        email,
-        phoneNumber,
-        address,
-        bank,
-        accountNumber,
-        profileImage,
-        idCardImage
-      };
-  
-      // ส่งข้อมูลไปยัง API ด้วย Authorization header
-      const response = await fetch('/api/confirmprofilesell', {
-        method: 'POST',
-        body: JSON.stringify(formData),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // ใส่ Token ใน Authorization header
-        },
-        credentials: 'include', // ถ้าจำเป็น
-      });
-  
-      const data = await response.json();
-      if (data.success) {
-        console.log('ข้อมูลถูกส่งสำเร็จ');
-      } else {
-        console.error('เกิดข้อผิดพลาดจากเซิร์ฟเวอร์:', data.message);
-      }
-    } catch (error) {
-      console.error('เกิดข้อผิดพลาดขณะส่งข้อมูล:', error);
-    }
-  };
->>>>>>> Stashed changes
 
   return (
     <>
@@ -207,14 +164,15 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {isClient && (
             <div className="mb-4">
-            <label className="block text-gray-700 font-medium">อัปโหลดรูปโปรไฟล์</label>
+            <div className="block text-gray-700 font-medium">อัปโหลดรูปโปรไฟล์</div>
             <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
                 className="w-full px-4 py-2 border rounded-lg"
             />
-            {profileImage && <img src={profileImage} alt="Profile" className="mt-2 w-24 h-24 object-cover" />}
+            {profileImage && <img src={profileImage} alt="Profile" 
+            className="mt-2 w-24 h-24 object-cover rounded-full border border-gray-300 shadow-sm" />}
           </div>
           )}
 

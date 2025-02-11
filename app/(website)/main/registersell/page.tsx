@@ -57,12 +57,7 @@ export default function RegisterSell() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          userName: formData.userName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
