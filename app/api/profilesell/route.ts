@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         const accountNumber = formData.get("accountNumber") as string;
         const status = formData.get("status") as string || "pending";
 
+        // 🔹 ตรวจสอบค่าที่จำเป็น
         if (!userId || !firstName || !lastName || !address) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
@@ -54,13 +55,18 @@ export async function POST(req: Request) {
             });
         };
 
+        // 🔹 รับไฟล์ภาพจาก FormData
         const profileImageFile = formData.get("profileImage") as File;
         const idCardImageFile = formData.get("photoIdCard") as File;
 
+        // 🔹 ตรวจสอบและอัปโหลดไฟล์ภาพโปรไฟล์
         if (profileImageFile && profileImageFile.size > 0) {
             profileImage = await uploadImage(profileImageFile, "profile_pictures") as string;
+        } else {
+            return NextResponse.json({ error: "Profile image is required" }, { status: 400 });
         }
 
+        // 🔹 ตรวจสอบและอัปโหลดไฟล์ภาพบัตรประจำตัว
         if (idCardImageFile && idCardImageFile.size > 0) {
             photoIdCard = await uploadImage(idCardImageFile, "id_cards") as string;
         } else {
@@ -87,8 +93,9 @@ export async function POST(req: Request) {
         });
 
         console.log("Profile created successfully:", newProfile);
-        return NextResponse.json(newProfile, { status: 201 });
 
+        // 🔹 ส่งข้อมูลกลับ
+        return NextResponse.json(newProfile, { status: 201 });
     } catch (error) {
         console.error("Unexpected API Error:", error);
         return NextResponse.json({ error: "Failed to create profile", details: error.message }, { status: 500 });

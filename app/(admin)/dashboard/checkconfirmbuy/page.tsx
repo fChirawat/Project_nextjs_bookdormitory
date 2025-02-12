@@ -60,6 +60,8 @@ export default function AdminDashboard() {
           <div className="bg-white shadow-lg rounded-lg p-4">
             <h3 className="text-lg font-bold text-gray-800">Total Users</h3>
             <p className="text-2xl text-green-500 font-bold">1,024</p>
+
+
           </div>
 
           {/* Card 2 */}

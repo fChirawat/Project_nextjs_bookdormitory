@@ -43,20 +43,20 @@ export default function Login() {
       try {
         const response = await fetch("/api/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username: formData.username,
             password: formData.password,
           }),
         });
-
+  
         const data = await response.json();
         if (data.success) {
+          // ✅ เก็บ Token ลง LocalStorage
+          localStorage.setItem("token", data.token);
+  
           alert(data.message);
-          // Redirect to the homepage
-          window.location.href = "/main/home";
+          window.location.href = "/main/home"; // Redirect
         } else {
           alert(data.message);
         }
@@ -65,6 +65,7 @@ export default function Login() {
       }
     }
   };
+  
 
   return (
     <>

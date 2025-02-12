@@ -5,21 +5,24 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    // ดึงข้อมูล users และ userSells
     const users = await prisma.user.findMany();
     const userSells = await prisma.userSell.findMany();
 
-    // รวม users และ userSells
-    const allUsers = [...users, ...userSells];
+    // นับผู้ใช้ที่ล็อกอินแล้ว
+    // สมมติว่าเรามีฟิลด์ isLoggedIn เพื่อบ่งชี้สถานะการล็อกอิน
+    const totalLoginUsers = users.filter(user => user.isLoggedIn).length;
 
-    const totalUsers = allUsers.length;
-    const totalLoginUsers = users.length; // หรือจะใช้วิธีการอื่นในการนับ users ที่ล็อกอิน
+    // จำนวนทั้งหมด
+    const totalUsers = users.length + userSells.length;
     const totalSellers = userSells.length;
 
     return NextResponse.json({
       totalUsers,
       totalLoginUsers,
       totalSellers,
-      users: allUsers, // ส่งข้อมูลรวมทั้งหมด
+      users, // ส่งข้อมูล users ที่แยกจาก userSells
+      userSells, // ส่งข้อมูล userSells ที่แยกจาก users...
     });
   } catch (error) {
     console.error("Error fetching users:", error);

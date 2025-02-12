@@ -13,22 +13,31 @@ model User {
   email    String   @unique
   phone    String   @unique
   password String
-  profile  Profile? // Linked to Profile
+  profile  Profile? // ไม่ต้องใช้ @relation ที่นี่แล้ว
+  profileId Int?   // ฟิลด์ที่เชื่อมโยงกับ Profile
 
   @@unique([username, email, phone])
 }
 
+
 model Profile {
   id                Int    @id @default(autoincrement())
-  userId            Int    @unique
+  userId            Int    @unique // userId เป็น unique
+  user              User   @relation(fields: [userId], references: [id]) // เชื่อมโยงกับ User
   firstName         String
   lastName          String
   address           String
-  photoIdCard       String
+  photoIDcard       String
   relationship      String
   phoneRelationship String
-  user              User   @relation(fields: [userId], references: [id]) // Linked back to User
+  phoneNumber       String
+  email             String
+  contactInfo       String
+  title             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
+
 
 model UserSell {
   id        Int          @id @default(autoincrement())
