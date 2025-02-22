@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       const { id } = decodedToken as { id: number };
       
       // ทำการ query ข้อมูล user จาก Prisma
-      const user = await prisma.userSell.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id },
         select: { username: true, email: true, phone: true },
       });

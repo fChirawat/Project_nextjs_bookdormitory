@@ -2,15 +2,18 @@
 import Navconf from "@/components/Navconf";
 import { useState, useEffect } from 'react';
 
+
 export default function ConframProfile() {
   const [isClient, setIsClient] = useState(false);
+
+export default function ConfirmProfile() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [idCardImage, setIdCardImage] = useState<string | null>(null);
+  const [username, setUsername] = useState("กำลังโหลด...");
   const [title, setTitle] = useState<string>("นาย");
   const [username, setUsername] = useState("กำลังโหลด...");
   const [firstname, setFirstname] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [relationship, setRelationship] = useState<string>("");
@@ -124,6 +127,40 @@ export default function ConframProfile() {
       formData.append("photoIdCard", blob, "idcard.jpg");
     }
 
+
+  
+    // ตรวจสอบข้อมูลที่จำเป็น
+    const missingFields = [];
+    if (!firstname) missingFields.push("ชื่อจริง");
+    if (!lastname) missingFields.push("นามสกุล");
+    if (!phoneNumber) missingFields.push("เบอร์โทรศัพท์");
+    if (!email) missingFields.push("อีเมล");
+    if (!contactInfo) missingFields.push("ข้อมูลติดต่อ (Facebook / Line)");
+    if (!idCardImage) missingFields.push("รูปบัตรประชาชน");
+    if (!phoneRelationship) missingFields.push("เบอร์โทรศัพท์");
+    if (!relationship) missingFields.push("พ่อ,แม่");
+  
+    if (missingFields.length > 0) {
+      alert(`กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!\nข้อมูลที่ขาด: ${missingFields.join(", ")}`);
+      return;
+    }
+  
+    // เตรียม payload
+    const formData = new FormData();
+  formData.append("userId", String(userId));
+  formData.append("title", title);
+  formData.append("firstName", firstname);
+  formData.append("lastName", lastname);
+  formData.append("username", username);
+  formData.append("email", email);
+  formData.append("phoneNumber", phoneNumber);
+  formData.append('phoneRelationship', phoneRelationship);
+  formData.append('contactInfo', contactInfo);
+
+  formData.append("status", "pending");
+  
+    console.log("Submitting payload:", payload);
+  
     try {
       const response = await fetch("/api/profile", {
         method: "POST",
@@ -165,14 +202,47 @@ export default function ConframProfile() {
               )}
             </div>
 
-            
-
             <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg">
               <option value="" disabled>เลือกคำนำหน้า</option>
               <option value="นาย">นาย</option>
               <option value="นางสาว">นางสาว</option>
               <option value="นาง">นาง</option>
             </select>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">อัปโหลดรูปบัตรประชาชน</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")}
+                className="w-full px-4 py-2 border rounded-lg"
+              />
+              {idCardImage && <img src={idCardImage} alt="ID Card" className="mt-2 w-24 h-24 object-cover" />}
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">Username</label>
+              <input
+                type="text"
+                value={username}
+                className="w-full px-4 py-2 border rounded-lg bg-gray-100"
+                readOnly
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium">คำนำหน้า</label>
+              <select
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg"
+              >
+                <option value="" disabled>เลือกคำนำหน้า</option>
+                <option value="นาย">นาย</option>
+                <option value="นางสาว">นางสาว</option>
+                <option value="นาง">นาง</option>
+              </select>
+            </div>
 
             <input
               type="text"
@@ -231,6 +301,14 @@ export default function ConframProfile() {
               onChange={(e) => setAccountNumber(e.target.value)}
               placeholder="หมายเลขบัญชี"
               className="w-full p-2 border border-gray-300 rounded-lg"
+
+            <input
+              type="text"
+              value={contactInfo}
+              onChange={(e) => setContactInfo(e.target.value)}
+              placeholder="Facebook / Line"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+
               required
             />
 
@@ -272,4 +350,5 @@ export default function ConframProfile() {
       </div>
     </>
   );
+}
 }
