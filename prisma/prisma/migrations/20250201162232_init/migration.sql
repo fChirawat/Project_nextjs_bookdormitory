@@ -6,8 +6,3 @@ ALTER TABLE `profilesell`
     ADD COLUMN `phoneNumber` VARCHAR(191) NULL,
     ADD COLUMN `profileImage` VARCHAR(191) NULL,
     ADD COLUMN `title` VARCHAR(191) NULL;
-
-ALTER TABLE `confirmprofilm` 
-ADD COLUMN `title` VARCHAR(10),
-ADD COLUMN `firstname` VARCHAR(191);
-
