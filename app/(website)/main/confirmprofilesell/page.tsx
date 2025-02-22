@@ -97,44 +97,38 @@ const handleSubmit = async (e: React.FormEvent) => {
       return;
   }
 
-  // 🔹 Prepare FormData payload
-  const formData = new FormData();
-  formData.append("userId", String(userId));
-  formData.append("title", title);
-  formData.append("firstName", firstname);
-  formData.append("lastName", lastname);
-  formData.append("username", username);
-  formData.append("email", email);
-  formData.append("phoneNumber", phoneNumber);
-  formData.append("address", address);
-  formData.append("bank", bank);
-  formData.append("accountNumber", accountNumber);
-  formData.append("status", "pending");
-
-  // 🔹 Append images if available
-  if (profileImage) {
-    const profileFile = await fetch(profileImage).then(res => res.blob());
-    formData.append("profileImage", profileFile, "profile.jpg");
-  }
-
-  if (idCardImage) {
-    const idCardFile = await fetch(idCardImage).then(res => res.blob());
-    formData.append("photoIdCard", idCardFile, "idcard.jpg");
-  }
-
-  console.log("Submitting FormData:", formData); // ✅ Log request before sending
-
+   // 🔹 Prepare FormData payload
+   const formData = new FormData();
+   formData.append("userId", String(userId));
+   formData.append("title", title);
+   formData.append("firstName", firstname);
+   formData.append("lastName", lastname);
+   formData.append("username", username);
+   formData.append("email", email);
+   formData.append("phoneNumber", phoneNumber);
+   formData.append("address", address);
+   formData.append("bank", bank);
+   formData.append("accountNumber", accountNumber);
+   formData.append("status", "pending");
+   // 🔹 Append images if available
+   if (profileImage) {
+     const profileFile = await fetch(profileImage).then(res => res.blob());
+     formData.append("profileImage", profileFile, "profile.jpg");
+   }
+   if (idCardImage) {
+     const idCardFile = await fetch(idCardImage).then(res => res.blob());
+     formData.append("photoIdCard", idCardFile, "idcard.jpg");
+   }
+   console.log("Submitting FormData:", formData); // ✅ Log request before sending
+ 
   try {
     const response = await fetch("/api/profilesell", {
       method: "POST",
       body: formData, // ✅ Sending as FormData
     });
-
     console.log("Response status:", response.status); // ✅ Log response status
-
     const responseText = await response.text();
     console.log("Raw response text:", responseText); // ✅ Log raw response
-
     if (!response.ok) {
       let errorData;
       try {
@@ -144,10 +138,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       }
       throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
     }
-
     alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
     console.log("Profile created successfully!");
-
   } catch (error) {
     console.error("Profile submission error:", error);
     alert("Error submitting profile: " + error.message);
