@@ -71,9 +71,16 @@ model ProfileSell {
   userSell      UserSell @relation(fields: [userId], references: [id])
 }
 
+
+
 model FormSell {
   id                Int      @id @default(autoincrement())
   userSellId        Int
+  title             String   // เพิ่มฟิลด์ title
+  firstName         String
+  lastName          String
+  email             String   // เพิ่มฟิลด์ email
+  phone             String   // เพิ่มฟิลด์ phone
   nameDormitory     String
   typeDormitory     String
   addressDormitory  String
@@ -88,5 +95,6 @@ model FormSell {
   priceWifi         Float
   priceOther        Float
   photoDormitory    String?
+
   userSell          UserSell @relation(fields: [userSellId], references: [id]) // Linked back to UserSell
 }

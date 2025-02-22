@@ -3,18 +3,23 @@ import Navconf from "@/components/Navconf";
 import { useState, useEffect } from 'react';
 
 export default function ConframProfile() {
-  const [userId, setUserId] = useState<number | null>(null);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [title, setTitle] = useState<string>('');
-  const [firstname, setFirstname] = useState<string>('');
-  const [lastname, setLastname] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [contactInfo, setContactInfo] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
   const [isClient, setIsClient] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [idCardImage, setIdCardImage] = useState<string | null>(null);
+  const [title, setTitle] = useState<string>("นาย");
+  const [username, setUsername] = useState("กำลังโหลด...");
+  const [firstname, setFirstname] = useState<string>("");
+  const [lastname, setLastname] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [relationship, setRelationship] = useState<string>("");
+  const [phoneRelationship, setPhoneRelationship] = useState<string>("");
+  const [contactInfo, setContactInfo] = useState<string>("");
+  const [userId, setUserId] = useState<number | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [accountNumber, setAccountNumber] = useState("");
 
   useEffect(() => {
     setIsClient(true); // Prevents hydration error
@@ -23,7 +28,7 @@ export default function ConframProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/usersell", {
+        const response = await fetch("/api/users", {
           method: "GET",
           credentials: "include",
         });
@@ -36,7 +41,7 @@ export default function ConframProfile() {
 
         if (data.success) {
           setUserId(data.user.id || null);
-          setLastname(data.user.lastname || "ไม่มีข้อมูล");
+          setUsername(data.user.username || "ไม่มีข้อมูล");
           setEmail(data.user.email || "ไม่มีข้อมูล");
           setPhoneNumber(data.user.phone || "ไม่มีข้อมูล");
         } else {
@@ -48,151 +53,6 @@ export default function ConframProfile() {
     };
 
     fetchUserData();
-  }, []);
-
-
-
-  const handleImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    setImage: React.Dispatch<React.SetStateAction<string | null>>,
-    folder: string
-) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async () => {
-        const base64Image = reader.result as string;
-
-        try {
-            const response = await fetch("/api/upload", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ image: base64Image, folder }),
-            });
-
-            // Ensure response is not empty
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-                throw new Error(errorData.error || "Upload failed");
-            }
-
-            const data = await response.json();
-            setImage(data.imageUrl); // ✅ Save Cloudinary URL
-
-        } catch (error) {
-            console.error("Upload error:", error);
-            alert("Failed to upload image.");
-        }
-    };
-    reader.readAsDataURL(file);
-};
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  // 🔍 Log ค่าเพื่อการตรวจสอบก่อน submit
-  console.log("🚀 ตรวจสอบค่าก่อน submit:", {
-    userId,
-    firstname,
-    lastname,
-    address,
-    title,
-    email,
-    phoneNumber,
-    contactInfo,
-  });
-
-  // 🔹 Ensure required fields are filled
-  if (
-    !userId || // ตรวจสอบ userId ว่าเป็น null หรือไม่
-    !firstname.trim() || // ตรวจสอบชื่อว่ามีข้อมูลหรือไม่
-    !lastname.trim() || // ตรวจสอบนามสกุลว่ามีข้อมูลหรือไม่
-    !address.trim() || // ตรวจสอบที่อยู่ว่ามีข้อมูลหรือไม่
-    !title.trim() || // ตรวจสอบคำนำหน้าว่ามีข้อมูลหรือไม่
-    !email.trim() || // ตรวจสอบอีเมลว่ามีข้อมูลหรือไม่
-    !phoneNumber.trim() || // ตรวจสอบเบอร์โทรศัพท์ว่ามีข้อมูลหรือไม่
-    !contactInfo.trim() // ตรวจสอบข้อมูลติดต่อว่ามีข้อมูลหรือไม่
-  ) {
-    alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
-    return;
-  }
-
-  console.log("✅ ข้อมูลครบทุกช่อง! กำลังส่ง API...");
-
-  // 🔹 Prepare FormData payload
-  const formData = new FormData();
-  formData.append("userId", String(userId));
-  formData.append("title", title);
-  formData.append("firstName", firstname);
-  formData.append("lastName", lastname);
-  formData.append("email", email);
-  formData.append("phoneNumber", phoneNumber);
-  formData.append("address", address);
-  formData.append("contactInfo", contactInfo);
-  formData.append("status", "pending");
-
-  if (profileImage) {
-    const profileFile = await fetch(profileImage).then((res) => res.blob());
-    formData.append("profileImage", profileFile, "profile.jpg");
-  }
-
-  console.log("Submitting FormData:", formData); // ✅ Log request before sending
-
-  try {
-    const response = await fetch("/api/confirmprofile", {
-      method: "POST",
-      body: formData, // ✅ ส่ง FormData
-    });
-
-    console.log("Response status:", response.status); // ✅ Log response status
-
-    const responseText = await response.text();
-    console.log("Raw response text:", responseText); // ✅ Log raw response
-
-    if (!response.ok) {
-      let errorData;
-      try {
-        errorData = JSON.parse(responseText);
-      } catch {
-        errorData = { error: "Unknown error" };
-      }
-      throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
-    }
-
-    alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-    console.log("Profile created successfully!");
-  } catch (error) {
-    console.error("Profile submission error:", error);
-    alert("Error submitting profile: " + error.message);
-  }
-};
-
-  const [idCardImage, setIdCardImage] = useState<string | null>(null);
-  const [title, setTitle] = useState<string>("นาย");
-  const [firstname, setFirstname] = useState<string>("");
-  const [lastname, setLastname] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [relationship, setRelationship] = useState<string>("");
-  const [phoneRelationship, setPhoneRelationship] = useState<string>("");
-  const [contactInfo, setContactInfo] = useState<string>("");
-  const [userId, setUserId] = useState<number | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getCookie = (name: string): string | null => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-      return null;
-    };
-
-    const storedToken = getCookie("token") || localStorage.getItem("token");
-    setToken(storedToken);
-    console.log("🔑 Token จาก Client:", storedToken);
   }, []);
 
   const handleImageUpload = async (
@@ -220,7 +80,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         }
 
         const data = await response.json();
-        setImage(data.imageUrl);
+        setImage(data.imageUrl); // ✅ Save Cloudinary URL
       } catch (error) {
         console.error("Upload error:", error);
         alert("Failed to upload image.");
@@ -229,155 +89,97 @@ const handleSubmit = async (e: React.FormEvent) => {
     reader.readAsDataURL(file);
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // ตรวจสอบ Token
-    if (!token) {
-      alert("❌ ไม่มี Token หรือ Token ไม่ถูกต้อง");
+
+    // Ensure required fields are filled
+    if (!userId || !firstname || !lastname || !address || !accountNumber || !idCardImage) {
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
       return;
     }
-  
-    // ตรวจสอบข้อมูลที่จำเป็น
-    const missingFields = [];
-    if (!firstname) missingFields.push("ชื่อจริง");
-    if (!lastname) missingFields.push("นามสกุล");
-    if (!address) missingFields.push("ที่อยู่");
-    if (!phoneNumber) missingFields.push("เบอร์โทรศัพท์");
-    if (!email) missingFields.push("อีเมล");
-    if (!contactInfo) missingFields.push("ข้อมูลติดต่อ (Facebook / Line)");
-    if (!idCardImage) missingFields.push("รูปบัตรประชาชน");
-    if (!phoneRelationship) missingFields.push("เบอร์โทรศัพท์");
-    if (!relationship) missingFields.push("พ่อ,แม่");
-  
-    if (missingFields.length > 0) {
-      alert(`กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!\nข้อมูลที่ขาด: ${missingFields.join(", ")}`);
-      return;
+
+    const formData = new FormData();
+    formData.append("userId", String(userId));
+    formData.append("title", title);
+    formData.append("firstName", firstname);
+    formData.append("lastName", lastname);
+    formData.append("username", username);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("accountNumber", accountNumber);
+    formData.append("status", "pending");
+
+    // Add images to formData
+    if (profileImage) {
+      const response = await fetch(profileImage);
+      const blob = await response.blob();
+      formData.append("profileImage", blob, "profile.jpg");
     }
-  
-    // เตรียม payload
-    const payload = {
-      userId,
-      title,
-      firstname,
-      lastname,
-      email,
-      phoneNumber,
-      address,
-      contactInfo,
-      profileImage,
-      phoneRelationship,
-      relationship,
-      idCardImage,
-      status: "pending",
-    };
-  
-    console.log("Submitting payload:", payload);
-  
+
+    if (idCardImage) {
+      const response = await fetch(idCardImage);
+      const blob = await response.blob();
+      formData.append("photoIdCard", blob, "idcard.jpg");
+    }
+
     try {
-      const response = await fetch("/api/conprofile", {
+      const response = await fetch("/api/profile", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
+        body: formData,  // Do not set `Content-Type`
       });
-  
-      console.log("Response status:", response.status);
-      const responseText = await response.text();
-      console.log("Raw response text:", responseText);
-  
+
       if (!response.ok) {
-        let errorData;
-        try {
-          errorData = JSON.parse(responseText);
-        } catch {
-          errorData = { error: "Unknown error" };
-        }
+        const errorData = await response.json();
         throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
       }
-  
-      const data = JSON.parse(responseText);
+
       alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-      console.log("Profile created:", data);
     } catch (error) {
       console.error("Profile submission error:", error);
       alert("Error submitting profile: " + error.message);
     }
   };
 
-
   return (
     <>
       <Navconf />
       <div className="min-h-screen flex items-center justify-center bg-gray-100 p-2">
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-            ยืนยันตัวตนฝ่ายผู้ขาย
-          </h2>
-
-          <div className="avatar placeholder flex flex-col items-center gap-4 mt-4">
-            <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-300 relative">
-              <input
-                type="file"
-                className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-                onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
-                accept="image/*"
-              />
-              {profileImage ? (
-                <img src={profileImage} alt="Preview" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-gray-400 text-sm flex items-center justify-center h-full">
-                  อัปโหลดรูป
-                </span>
+          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">ยืนยันตัวตน</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="avatar flex flex-col items-center justify-center">
+              <label className="block text-gray-700 font-medium mb-2">อัปโหลดรูปโปรไฟล์</label>
+              {isClient && (
+                <div className="relative w-24 h-24 flex items-center justify-center mb-4">
+                  <span className="absolute flex items-center justify-center w-24 h-24 bg-gray-300 rounded-full text-white text-3xl">+</span>
+                  {profileImage && <img src={profileImage} alt="Profile" className="absolute w-24 h-24 rounded-full object-cover" />}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
+                    className="w-24 h-24 rounded-full border border-gray-300 opacity-0 cursor-pointer"
+                  />
+                </div>
               )}
             </div>
-          </div>
 
-          {/* ✅ ฟอร์มส่งข้อมูล */}
-          <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">ยืนยันตัวตน</h2>
+            
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium">อัปโหลดรูปโปรไฟล์</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
-                className="w-full px-4 py-2 border rounded-lg"
-              />
-              {profileImage && <img src={profileImage} alt="Profile" className="mt-2 w-24 h-24 object-cover rounded-full border border-gray-300 shadow-sm" />}
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium">อัปโหลดรูปบัตรประชาชน</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")}
-                className="w-full px-4 py-2 border rounded-lg"
-              />
-              {idCardImage && <img src={idCardImage} alt="ID Card" className="mt-2 w-24 h-24 object-cover" />}
-            </div>
-            <select
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              required
-            >
+            <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg">
               <option value="" disabled>เลือกคำนำหน้า</option>
               <option value="นาย">นาย</option>
               <option value="นางสาว">นางสาว</option>
               <option value="นาง">นาง</option>
             </select>
+
             <input
               type="text"
               value={firstname}
               onChange={(e) => setFirstname(e.target.value)}
               placeholder="ชื่อจริง"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-lg"
               required
             />
             <input
@@ -385,62 +187,85 @@ const handleSubmit = async (e: React.FormEvent) => {
               value={lastname}
               onChange={(e) => setLastname(e.target.value)}
               placeholder="นามสกุล"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-lg"
               required
             />
             <input
-              type="text"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-lg"
             />
             <input
               type="text"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               placeholder="เบอร์โทรศัพท์"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-lg"
             />
             <input
               type="text"
               value={relationship}
               onChange={(e) => setRelationship(e.target.value)}
               placeholder="พ่อ,แม่,คนรู้จัก"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-lg"
             />
             <input
               type="text"
               value={phoneRelationship}
               onChange={(e) => setPhoneRelationship(e.target.value)}
               placeholder="เบอร์โทรศัพท์"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-lg"
             />
-            <input
-              type="text"
+            <textarea
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="ที่อยู่"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full p-2 border border-gray-300 rounded-lg"
               required
             />
             <input
               type="text"
-              value={contactInfo}
-              onChange={(e) => setContactInfo(e.target.value)}
-              placeholder="Facebook / Line"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+              placeholder="หมายเลขบัญชี"
+              className="w-full p-2 border border-gray-300 rounded-lg"
               required
             />
+
+{isClient && (
+             <div className="flex flex-col items-center mb-6">
+             <label className="block text-gray-700 font-medium mb-2">อัปโหลดรูปบัตรประชาชน</label>
+           
+             {/* กรอบอัปโหลดรูป */}
+             <div className="relative w-28 h-28 border-2 border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
+               {/* เครื่องหมาย + */}
+               {!idCardImage && (
+                 <span className="absolute text-gray-500 text-4xl font-bold">+</span>
+               )}
+           
+               {/* รูปภาพแสดงเมื่ออัปโหลดแล้ว */}
+               {idCardImage && (
+                 <img src={idCardImage} alt="ID Card" className="w-full h-full object-cover" />
+               )}
+           
+               {/* Input สำหรับอัปโหลด */}
+               <input
+                 type="file"
+                 accept="image/*"
+                 onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")}
+                 className="absolute inset-0 opacity-0 cursor-pointer"
+               />
+             </div>
+           </div>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+              className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg"
             >
-              ส่งข้อมูลยืนยันตัวตน
+              ส่งข้อมูล
             </button>
           </form>
         </div>
