@@ -11,7 +11,7 @@ export async function GET() {
 
     // นับผู้ใช้ที่ล็อกอินแล้ว
     // สมมติว่าเรามีฟิลด์ isLoggedIn เพื่อบ่งชี้สถานะการล็อกอิน
-    const totalLoginUsers = users.filter(user => user.isLoggedIn).length;
+    const totalLoginUsers = users.length;
 
     // จำนวนทั้งหมด
     const totalUsers = users.length + userSells.length;
