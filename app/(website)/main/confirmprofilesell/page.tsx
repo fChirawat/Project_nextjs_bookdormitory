@@ -17,6 +17,8 @@ export default function Conframsell() {
   const [bank, setBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     setIsClient(true); // Prevents hydration error
@@ -40,7 +42,7 @@ export default function Conframsell() {
           setUserId(data.user.id || null);
           setUsername(data.user.username || "ไม่มีข้อมูล");
           setEmail(data.user.email || "ไม่มีข้อมูล");
-          setPhoneNumber(data.user.phone || "ไม่มีข้อมูล");
+          setPhoneNumber(data.user.phone ?? "ไม่มีข้อมูล");
         } else {
           setError("Error fetching user: " + data.message);
         }
@@ -88,63 +90,64 @@ export default function Conframsell() {
     reader.readAsDataURL(file);
 };
 
+
+
+
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // 🔹 Ensure required fields are filled
+  if (isSubmitting || isSubmitted) return; // 🔹 ป้องกันการกดซ้ำ
+  setIsSubmitting(true);
+
   if (!userId || !firstname || !lastname || !address || !bank || !accountNumber || !idCardImage) {
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
-      return;
+    alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
+    setIsSubmitting(false);
+    return;
   }
 
-   // 🔹 Prepare FormData payload
-   const formData = new FormData();
-   formData.append("userId", String(userId));
-   formData.append("title", title);
-   formData.append("firstName", firstname);
-   formData.append("lastName", lastname);
-   formData.append("username", username);
-   formData.append("email", email);
-   formData.append("phoneNumber", phoneNumber);
-   formData.append("address", address);
-   formData.append("bank", bank);
-   formData.append("accountNumber", accountNumber);
-   formData.append("status", "pending");
-   // 🔹 Append images if available
-   if (profileImage) {
-     const profileFile = await fetch(profileImage).then(res => res.blob());
-     formData.append("profileImage", profileFile, "profile.jpg");
-   }
-   if (idCardImage) {
-     const idCardFile = await fetch(idCardImage).then(res => res.blob());
-     formData.append("photoIdCard", idCardFile, "idcard.jpg");
-   }
-   console.log("Submitting FormData:", formData); // ✅ Log request before sending
- 
   try {
+    const formData = new FormData();
+    formData.append("userId", String(userId));
+    formData.append("title", title);
+    formData.append("firstName", firstname);
+    formData.append("lastName", lastname);
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("address", address);
+    formData.append("bank", bank);
+    formData.append("accountNumber", accountNumber);
+    formData.append("status", "pending");
+
+    if (profileImage) {
+      const profileFile = await fetch(profileImage).then(res => res.blob());
+      formData.append("profileImage", profileFile, "profile.jpg");
+    }
+    if (idCardImage) {
+      const idCardFile = await fetch(idCardImage).then(res => res.blob());
+      formData.append("photoIdCard", idCardFile, "idcard.jpg");
+    }
+
     const response = await fetch("/api/profilesell", {
       method: "POST",
-      body: formData, // ✅ Sending as FormData
+      body: formData,
     });
-    console.log("Response status:", response.status); // ✅ Log response status
-    const responseText = await response.text();
-    console.log("Raw response text:", responseText); // ✅ Log raw response
+
     if (!response.ok) {
-      let errorData;
-      try {
-        errorData = JSON.parse(responseText);
-      } catch {
-        errorData = { error: "Unknown error" };
-      }
-      throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
+      throw new Error("เกิดข้อผิดพลาดในการส่งข้อมูล");
     }
+
     alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    setIsSubmitted(true); // 🔹 เปลี่ยนสถานะปุ่มเป็น "รอตรวจสอบ"
     console.log("Profile created successfully!");
   } catch (error) {
     console.error("Profile submission error:", error);
     alert("Error submitting profile: " + error.message);
+  } finally {
+    setIsSubmitting(false);
   }
 };
+
 
 
 
@@ -266,12 +269,21 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
             )}
 
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-            >
-              ส่งข้อมูลยืนยันตัวตน
-            </button>
+              <button
+                type="submit"
+                className={`w-full text-white py-2 px-4 rounded-lg ${
+                  isSubmitted
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600"
+                }`}
+                disabled={isSubmitting || isSubmitted} // 🔹 ปิดปุ่มหลังส่งสำเร็จ
+              >
+                {isSubmitted ? "รอตรวจสอบ" : isSubmitting ? "กำลังส่ง..." : "ส่งข้อมูลยืนยันตัวตน"}
+              </button>
+
+
           </form>
         </div>
       </div>
