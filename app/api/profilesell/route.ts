@@ -52,7 +52,14 @@ export async function POST(req: Request) {
         const userId = Number(formData.get("userId"));
         const firstName = formData.get("firstName") as string;
         const lastName = formData.get("lastName") as string;
+        const title = formData.get("title") as string;
+        const username = formData.get("username") as string;
+        const phoneNumber = formData.get("phoneNumber") as string;
+        const email = formData.get("email") as string;
+        const accountNumber = formData.get("accountNumber") as string;
+        const bank = formData.get("bank") as string;
         const address = formData.get("address") as string;
+
 
         if (!userId || !firstName || !lastName || !address) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -83,9 +90,15 @@ export async function POST(req: Request) {
         const newProfile = await prisma.profileSell.create({
             data: {
                 userId,
+                title,
                 firstName,
                 lastName,
+                username,
+                phoneNumber,
+                email,
                 address,
+                bank,
+                accountNumber,
                 profileImage,
                 photoIdCard
             },
