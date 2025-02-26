@@ -1,29 +1,50 @@
-"use client";  // เพิ่มบรรทัดนี้เพื่อให้ไฟล์นี้ทำงานใน Client-Side
+"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Link from "next/link";
 
 export default function ManageUser() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true); // สถานะการโหลด
-  const [error, setError] = useState(null); // สถานะข้อผิดพลาด
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalSellers: 0,
+    users: [],
+    userSells: [],
+  });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
-    setError(null); // เคลียร์ข้อผิดพลาดก่อน
+    setError(null);
     try {
       const response = await axios.get("/api/dashboard");
-      console.log(response.data); // ตรวจสอบข้อมูลที่ได้
-      if (response.data && Array.isArray(response.data.users)) {
-        setUsers(response.data.users);
+      console.log("API Response:", response.data); // ตรวจสอบค่าจาก API
+  
+      if (response.data) {
+        const users = (response.data.users || []).map(user => ({
+          ...user,
+          role: "user",
+        }));
+  
+        const userSells = (response.data.userSells || []).map(user => ({
+          ...user,
+          role: "usersell",
+        }));
+  
+        console.log("Processed Users:", users);
+        console.log("Processed Sellers:", userSells);
+  
+        setStats({
+          totalUsers: users.length,
+          totalSellers: userSells.length,
+          users,
+          userSells,
+        });
       } else {
-        console.error("Expected an array but got:", response.data);
-        setUsers([]);
+        console.error("Unexpected API response:", response.data);
+        setStats({ totalUsers: 0, totalSellers: 0, users: [], userSells: [] });
       }
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -32,109 +53,91 @@ export default function ManageUser() {
       setLoading(false);
     }
   };
+  
 
-  const deleteUser = async (userId) => {
-    try {
-      await axios.delete(`/api/users/${userId}`);
-      alert("ลบผู้ใช้สำเร็จ");
-      fetchUsers(); // รีเฟรชข้อมูล
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-    }
-  };
+  useEffect(() => {
+    fetchUsers();
+  }, []); // ✅ เรียกใช้ครั้งเดียวตอนโหลด
+  
 
-  const deleteAllUsers = async () => {
-    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ทั้งหมด?")) {
+
+
+  const deleteUser = async (userId, role) => {
+    if (confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้ ${userId} ที่มีบทบาท ${role}?`)) {
       try {
-        await axios.delete("/api/users");
-        alert("ลบผู้ใช้ทั้งหมดสำเร็จ");
-        fetchUsers(); // รีเฟรชข้อมูล
+        await axios.delete(`/api/users/${userId}`);
+        fetchUsers();
       } catch (error) {
-        console.error("Failed to delete all users:", error);
+        console.error("Failed to delete user:", error);
+        setError("ไม่สามารถลบผู้ใช้ได้");
       }
     }
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-  
-    // ตรวจสอบว่า date ที่ได้สามารถแปลงเป็นวันที่ที่ถูกต้องหรือไม่
-    if (isNaN(date)) {
-      return "ไม่ทราบวันที่"; // กรณีที่ไม่สามารถแปลงเป็นวันที่ได้
-    }
-  
-    return new Intl.DateTimeFormat("th-TH").format(date); // ฟอร์แมตวันที่
-  };
-  
+  const renderTable = (title, users) => (
+    <section className="mt-6 bg-white shadow-lg rounded-lg p-4">
+      <h3 className="text-lg font-bold text-gray-800 mb-4">{title} ({users.length})</h3>
+      <table className="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border border-gray-300 px-4 py-2 text-center">ID</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Name</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Email</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Role</th>
+            <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.length > 0 ? (
+            users.map(user => (
+              <tr key={user.id} className="hover:bg-gray-100">
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.id}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.username || user.name}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.email}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">{user.role || "User"}</td>
+                <td className="border border-gray-300 px-4 py-2 text-center">
+                  <button onClick={() => deleteUser(user.id, user.role)} className="bg-red-500 text-white px-3 py-1 rounded-lg">ลบ</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={5} className="border border-gray-300 px-4 py-2 text-center">ไม่พบข้อมูล</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </section>
+  );
 
   return (
     <div className="p-5">
-      <h1 className="text-2xl font-bold mb-5">Manage Users</h1>
-      <div className="flex justify-end mb-5">
-        <button
-          onClick={deleteAllUsers}
-          className="bg-red-500 text-white px-4 py-2 rounded mr-3"
-        >
-          ลบผู้ใช้ทั้งหมด
+  <h1 className="text-2xl font-bold mb-5">Manage Users</h1>
+  <div className="flex justify-between mb-5">
+    <p className="text-gray-700">📌 Users: {stats.totalUsers} | Sellers: {stats.totalSellers}</p>
+    <div className="flex space-x-2">
+      <button onClick={fetchUsers} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+        รีเฟรช
+      </button>
+      <Link href="/dashboard">
+        <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+          back
         </button>
-        <Link href="/dashboard">
-          <button className="bg-green-500 text-white px-4 py-2 rounded mr-3">
-            กลับ Dashbord
-          </button>
-        </Link>
-        <button
-          onClick={fetchUsers}
-          className="bg-blue-500 text-white px-4 py-2 rounded "
-        >
-          รีเฟรช
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="text-center py-4">กำลังโหลด...</div> // ข้อความโหลด
-      ) : error ? (
-        <div className="text-center text-red-500">{error}</div> // ข้อความข้อผิดพลาด
-      ) : (
-        <table className="min-w-full border-collapse border border-gray-300">
-          <thead>
-            <tr>
-              <th className="border border-gray-300 px-4 py-2 text-center align-middle">ID</th>
-              <th className="border border-gray-300 px-4 py-2 text-center align-middle">ชื่อผู้ใช้</th>
-              <th className="border border-gray-300 px-4 py-2 text-center align-middle">อีเมล</th>
-              <th className="border border-gray-300 px-4 py-2 text-center align-middle">วันที่สมัคร</th>
-              <th className="border border-gray-300 px-4 py-2 text-center align-middle">การกระทำ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(users) && users.length > 0 ? (
-              users.map((user) => (
-                <tr key={user.id}>
-                  <td className="border border-gray-300 px-4 py-2 text-center align-middle">{user.id}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center align-middle">{user.username}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center align-middle">{user.email}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center align-middle">{formatDate(user.createdAt)}</td> {/* แสดงวันที่ */}
-                  <td className="border border-gray-300 px-4 py-2 text-center align-middle">
-                    <div className="flex justify-center items-center">
-                      <button
-                        onClick={() => deleteUser(user.id)}
-                        className="bg-red-500 text-white px-3 py-1 rounded"
-                      >
-                        ลบ
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="border border-gray-300 px-4 py-2 text-center">
-                  ไม่มีข้อมูลผู้ใช้
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
+      </Link>
     </div>
+  </div>
+
+  {loading ? (
+    <div className="text-center py-4">กำลังโหลด...</div>
+  ) : error ? (
+    <div className="text-center text-red-500">{error}</div>
+  ) : (
+    <>
+      {renderTable("User List", stats.users)}
+      {renderTable("User Sell List", stats.userSells)}
+    </>
+  )}
+</div>
+
   );
 }
