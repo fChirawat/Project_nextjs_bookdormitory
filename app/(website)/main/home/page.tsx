@@ -65,10 +65,10 @@ const Card = ({
 
         {/* Buttons */}
         <div className="flex flex-col items-end space-y-2 mt-6">
-          <Link href="/dormitory-detail" className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg shadow w-40 text-center">
+          <Link href="/main/dormitory_detail" className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg shadow w-40 text-center">
             รายละเอียด
           </Link>
-          <Link href="/book-dormitory" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow w-40 text-center">
+          <Link href="/main/book_dormitory" className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow w-40 text-center">
             จองหอพัก
           </Link>
         </div>

@@ -1,5 +1,5 @@
-import Navbar from '@/components/Navbar';
-import NavHome from '@/components/NavHome';
+'use client'
+
 import NavHomeSell from '@/components/NavHomeSell';
 import React from 'react';
 

@@ -1,17 +1,14 @@
-'use client';
+"use client";
+
 import Navconf from "@/components/Navconf";
-import { useState, useEffect } from 'react';
-
-
-export default function ConframProfile() {
-  const [isClient, setIsClient] = useState(false);
+import { useState, useEffect } from "react";
 
 export default function ConfirmProfile() {
+  const [isClient, setIsClient] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [idCardImage, setIdCardImage] = useState<string | null>(null);
   const [username, setUsername] = useState("กำลังโหลด...");
   const [title, setTitle] = useState<string>("นาย");
-  const [username, setUsername] = useState("กำลังโหลด...");
   const [firstname, setFirstname] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -20,12 +17,12 @@ export default function ConfirmProfile() {
   const [phoneRelationship, setPhoneRelationship] = useState<string>("");
   const [contactInfo, setContactInfo] = useState<string>("");
   const [userId, setUserId] = useState<number | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [address, setAddress] = useState<string>("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsClient(true); // Prevents hydration error
+    setIsClient(true);
   }, []);
 
   useEffect(() => {
@@ -42,6 +39,7 @@ export default function ConfirmProfile() {
 
         const data = await response.json();
 
+
         if (data.success) {
           setUserId(data.user.id || null);
           setUsername(data.user.username || "ไม่มีข้อมูล");
@@ -54,7 +52,6 @@ export default function ConfirmProfile() {
         setError("Error fetching user data");
       }
     };
-
     fetchUserData();
   }, []);
 
@@ -69,7 +66,6 @@ export default function ConfirmProfile() {
     const reader = new FileReader();
     reader.onload = async () => {
       const base64Image = reader.result as string;
-
       try {
         const response = await fetch("/api/upload", {
           method: "POST",
@@ -77,13 +73,9 @@ export default function ConfirmProfile() {
           body: JSON.stringify({ image: base64Image, folder }),
         });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-          throw new Error(errorData.error || "Upload failed");
-        }
-
+        if (!response.ok) throw new Error("Upload failed");
         const data = await response.json();
-        setImage(data.imageUrl); // ✅ Save Cloudinary URL
+        setImage(data.imageUrl);
       } catch (error) {
         console.error("Upload error:", error);
         alert("Failed to upload image.");
@@ -92,92 +84,67 @@ export default function ConfirmProfile() {
     reader.readAsDataURL(file);
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Ensure required fields are filled
-    if (!userId || !firstname || !lastname || !address || !accountNumber || !idCardImage) {
-      alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
+    if (
+      !userId ||
+      firstname.trim() === "" ||
+      lastname.trim() === "" ||
+      address.trim() === "" ||
+      accountNumber.trim() === "" ||
+      !idCardImage
+    ) {
+      alert("❗ กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("userId", String(userId));
     formData.append("title", title);
-    formData.append("firstName", firstname);
-    formData.append("lastName", lastname);
+    formData.append("firstName", firstname.trim());
+    formData.append("lastName", lastname.trim());
     formData.append("username", username);
-    formData.append("phoneNumber", phoneNumber);
-    formData.append("email", email);
-    formData.append("address", address);
-    formData.append("accountNumber", accountNumber);
+    formData.append("email", email.trim());
+    formData.append("phoneNumber", phoneNumber.trim());
+    formData.append("phoneRelationship", phoneRelationship.trim());
+    formData.append("relationship", relationship.trim());
+    formData.append("contactInfo", contactInfo.trim());
+    formData.append("address", address.trim());
+    formData.append("accountNumber", accountNumber.trim());
     formData.append("status", "pending");
-
-    // Add images to formData
+  
     if (profileImage) {
       const response = await fetch(profileImage);
-      const blob = await response.blob();
-      formData.append("profileImage", blob, "profile.jpg");
+      formData.append("profileImage", await response.blob(), "profile.jpg");
     }
-
     if (idCardImage) {
       const response = await fetch(idCardImage);
-      const blob = await response.blob();
-      formData.append("photoIdCard", blob, "idcard.jpg");
+      formData.append("photoIdCard", await response.blob(), "idcard.jpg");
     }
-
-
-  
-    // ตรวจสอบข้อมูลที่จำเป็น
-    const missingFields = [];
-    if (!firstname) missingFields.push("ชื่อจริง");
-    if (!lastname) missingFields.push("นามสกุล");
-    if (!phoneNumber) missingFields.push("เบอร์โทรศัพท์");
-    if (!email) missingFields.push("อีเมล");
-    if (!contactInfo) missingFields.push("ข้อมูลติดต่อ (Facebook / Line)");
-    if (!idCardImage) missingFields.push("รูปบัตรประชาชน");
-    if (!phoneRelationship) missingFields.push("เบอร์โทรศัพท์");
-    if (!relationship) missingFields.push("พ่อ,แม่");
-  
-    if (missingFields.length > 0) {
-      alert(`กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!\nข้อมูลที่ขาด: ${missingFields.join(", ")}`);
-      return;
-    }
-  
-    // เตรียม payload
-    const formData = new FormData();
-  formData.append("userId", String(userId));
-  formData.append("title", title);
-  formData.append("firstName", firstname);
-  formData.append("lastName", lastname);
-  formData.append("username", username);
-  formData.append("email", email);
-  formData.append("phoneNumber", phoneNumber);
-  formData.append('phoneRelationship', phoneRelationship);
-  formData.append('contactInfo', contactInfo);
-
-  formData.append("status", "pending");
-  
-    console.log("Submitting payload:", payload);
   
     try {
       const response = await fetch("/api/profile", {
         method: "POST",
-        body: formData,  // Do not set `Content-Type`
+        body: formData,
       });
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { error: "Unknown error" };
+        }
         throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
       }
-
-      alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-    } catch (error) {
+      alert("✅ ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    } catch (error: any) {
       console.error("Profile submission error:", error);
-      alert("Error submitting profile: " + error.message);
+      alert("❌ Error submitting profile: " + error.message);
     }
   };
+  
+
 
   return (
     <>
@@ -186,169 +153,64 @@ export default function ConfirmProfile() {
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">ยืนยันตัวตน</h2>
           <form onSubmit={handleSubmit}>
-            <div className="avatar flex flex-col items-center justify-center">
-              <label className="block text-gray-700 font-medium mb-2">อัปโหลดรูปโปรไฟล์</label>
-              {isClient && (
-                <div className="relative w-24 h-24 flex items-center justify-center mb-4">
-                  <span className="absolute flex items-center justify-center w-24 h-24 bg-gray-300 rounded-full text-white text-3xl">+</span>
-                  {profileImage && <img src={profileImage} alt="Profile" className="absolute w-24 h-24 rounded-full object-cover" />}
+            {isClient && (
+              <div className="flex flex-col items-center mb-4">
+                <label className="text-gray-700 font-medium mb-2">อัปโหลดรูปโปรไฟล์</label>
+                <div className="relative w-24 h-24">
+                  {!profileImage && (
+                    <span className="absolute w-full h-full bg-gray-300 rounded-full text-3xl flex items-center justify-center">+</span>
+                  )}
+                  {profileImage && (
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
+                  )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, setProfileImage, "profile_pictures")}
-                    className="w-24 h-24 rounded-full border border-gray-300 opacity-0 cursor-pointer"
+                    className="absolute w-24 h-24 opacity-0 cursor-pointer"
                   />
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
-            <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border border-gray-300 rounded-lg">
-              <option value="" disabled>เลือกคำนำหน้า</option>
+            <select value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border rounded-lg mb-2">
+              <option value="" disabled>
+                เลือกคำนำหน้า
+              </option>
               <option value="นาย">นาย</option>
               <option value="นางสาว">นางสาว</option>
               <option value="นาง">นาง</option>
             </select>
 
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium">อัปโหลดรูปบัตรประชาชน</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")}
-                className="w-full px-4 py-2 border rounded-lg"
-              />
-              {idCardImage && <img src={idCardImage} alt="ID Card" className="mt-2 w-24 h-24 object-cover" />}
-            </div>
+            <input type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="ชื่อจริง" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="นามสกุล" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 border rounded-lg mb-2" />
+            <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="เบอร์โทรศัพท์" className="w-full p-2 border rounded-lg mb-2" />
+            <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="ที่อยู่" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} placeholder="หมายเลขบัญชี" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} placeholder="Facebook / Line" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={phoneRelationship} onChange={(e) => setPhoneRelationship(e.target.value)} placeholder="เบอร์โทรผู้ติดต่อ" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="ความสัมพันธ์" className="w-full p-2 border rounded-lg mb-2" required />
 
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium">Username</label>
-              <input
-                type="text"
-                value={username}
-                className="w-full px-4 py-2 border rounded-lg bg-gray-100"
-                readOnly
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700 font-medium">คำนำหน้า</label>
-              <select
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg"
-              >
-                <option value="" disabled>เลือกคำนำหน้า</option>
-                <option value="นาย">นาย</option>
-                <option value="นางสาว">นางสาว</option>
-                <option value="นาง">นาง</option>
-              </select>
-            </div>
-
-            <input
-              type="text"
-              value={firstname}
-              onChange={(e) => setFirstname(e.target.value)}
-              placeholder="ชื่อจริง"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-            <input
-              type="text"
-              value={lastname}
-              onChange={(e) => setLastname(e.target.value)}
-              placeholder="นามสกุล"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="เบอร์โทรศัพท์"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              value={relationship}
-              onChange={(e) => setRelationship(e.target.value)}
-              placeholder="พ่อ,แม่,คนรู้จัก"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="text"
-              value={phoneRelationship}
-              onChange={(e) => setPhoneRelationship(e.target.value)}
-              placeholder="เบอร์โทรศัพท์"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-            <textarea
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="ที่อยู่"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-            <input
-              type="text"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              placeholder="หมายเลขบัญชี"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-
-            <input
-              type="text"
-              value={contactInfo}
-              onChange={(e) => setContactInfo(e.target.value)}
-              placeholder="Facebook / Line"
-              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-
-              required
-            />
-
-{isClient && (
-             <div className="flex flex-col items-center mb-6">
-             <label className="block text-gray-700 font-medium mb-2">อัปโหลดรูปบัตรประชาชน</label>
-           
-             {/* กรอบอัปโหลดรูป */}
-             <div className="relative w-28 h-28 border-2 border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
-               {/* เครื่องหมาย + */}
-               {!idCardImage && (
-                 <span className="absolute text-gray-500 text-4xl font-bold">+</span>
-               )}
-           
-               {/* รูปภาพแสดงเมื่ออัปโหลดแล้ว */}
-               {idCardImage && (
-                 <img src={idCardImage} alt="ID Card" className="w-full h-full object-cover" />
-               )}
-           
-               {/* Input สำหรับอัปโหลด */}
-               <input
-                 type="file"
-                 accept="image/*"
-                 onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")}
-                 className="absolute inset-0 opacity-0 cursor-pointer"
-               />
-             </div>
-           </div>
+            {isClient && (
+              <div className="flex flex-col items-center mb-4">
+                <label className="text-gray-700 font-medium mb-2">อัปโหลดรูปบัตรประชาชน</label>
+                <div className="relative w-28 h-28 border-2 border-gray-300 rounded-lg overflow-hidden flex items-center justify-center">
+                  {!idCardImage && <span className="absolute text-gray-500 text-4xl font-bold">+</span>}
+                  {idCardImage && <img src={idCardImage} alt="ID Card" className="w-full h-full object-cover" />}
+                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, setIdCardImage, "id_cards")} className="absolute inset-0 opacity-0 cursor-pointer" />
+                </div>
+              </div>
             )}
 
-            <button
-              type="submit"
-              className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg"
-            >
-              ส่งข้อมูล
-            </button>
+            <button type="submit" className="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg">ส่งข้อมูล</button>
           </form>
         </div>
       </div>
     </>
   );
-}
 }
