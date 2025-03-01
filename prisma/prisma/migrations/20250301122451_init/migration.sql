@@ -76,11 +76,6 @@ CREATE TABLE `ProfileSell` (
 CREATE TABLE `FormSell` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `userSellId` INTEGER NOT NULL,
-    `title` VARCHAR(191) NOT NULL,
-    `firstName` VARCHAR(191) NOT NULL,
-    `lastName` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-    `phone` VARCHAR(191) NOT NULL,
     `nameDormitory` VARCHAR(191) NOT NULL,
     `typeDormitory` VARCHAR(191) NOT NULL,
     `addressDormitory` VARCHAR(191) NOT NULL,
@@ -95,31 +90,6 @@ CREATE TABLE `FormSell` (
     `priceWifi` DOUBLE NOT NULL,
     `priceOther` DOUBLE NOT NULL,
     `photoDormitory` VARCHAR(191) NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `Dormitory` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(191) NOT NULL,
-    `firstName` VARCHAR(191) NOT NULL,
-    `lastName` VARCHAR(191) NOT NULL,
-    `phoneNumber` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-    `priceOther` VARCHAR(191) NULL,
-    `priceWifi` VARCHAR(191) NULL,
-    `priceWater` VARCHAR(191) NULL,
-    `priceElectricity` VARCHAR(191) NULL,
-    `roomDeposit` VARCHAR(191) NOT NULL,
-    `roomNumber` VARCHAR(191) NOT NULL,
-    `facilitiesDormitory` VARCHAR(191) NULL,
-    `dormitoryDetails` VARCHAR(191) NULL,
-    `addressDormitory` VARCHAR(191) NOT NULL,
-    `typeDormitory` VARCHAR(191) NOT NULL,
-    `nameDormitory` VARCHAR(191) NOT NULL,
-    `photoDormitory` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
