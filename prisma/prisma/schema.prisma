@@ -44,7 +44,6 @@ model UserSell {
   password  String
   profile   ProfileSell? // Linked to ProfileSell
   formSells FormSell[] // Linked to FormSell
-  dormitories Dormitory[]
 
   @@unique([username, email, phone])
 }
@@ -69,16 +68,9 @@ model ProfileSell {
   userSell      UserSell @relation(fields: [userId], references: [id])
 }
 
-
-
 model FormSell {
   id                Int      @id @default(autoincrement())
   userSellId        Int
-  title             String   // เพิ่มฟิลด์ title
-  firstName         String
-  lastName          String
-  email             String   // เพิ่มฟิลด์ email
-  phone             String   // เพิ่มฟิลด์ phone
   nameDormitory     String
   typeDormitory     String
   addressDormitory  String
@@ -93,28 +85,5 @@ model FormSell {
   priceWifi         Float
   priceOther        Float
   photoDormitory    String?
-
   userSell          UserSell @relation(fields: [userSellId], references: [id]) // Linked back to UserSell
 }
-model Dormitory {
-  id                  Int      @id @default(autoincrement())
-  title               String
-  firstName           String
-  lastName            String
-  phoneNumber         String
-  email               String
-  priceOther          String?
-  priceWifi           String?
-  priceWater          String?
-  priceElectricity    String?
-  roomDeposit         String
-  roomNumber          String
-  facilitiesDormitory String?
-  dormitoryDetails    String?
-  addressDormitory    String
-  typeDormitory       String
-  nameDormitory       String
-  photoDormitory      String
-  createdAt           DateTime @default(now())
-}
-
