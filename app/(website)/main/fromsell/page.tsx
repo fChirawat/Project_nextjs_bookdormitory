@@ -1,5 +1,5 @@
 "use client"
-//test git4
+//test git5
 import Navfrom from "@/components/Navfrom";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
@@ -17,8 +17,10 @@ export default function FromSell() {
   const [accountNumber, setAccountNumber] = useState("");
   const [images, setImages] = useState([]);
   const[addressDormitory,setaddressDormitory] =useState<string>("");
+  const [distance, setDistance] =  useState<string>("");
   const [nameroom, setNameroom] = useState<string>("");
   const [roomCount, setRoomCount] = useState<number>(0);
+  const [image, setImage] = useState(null); // state สำหรับเก็บรูปภาพที่เลือก
 
   const [formDataList, setFormDataList] = useState(
     [] as {
@@ -34,6 +36,7 @@ export default function FromSell() {
       priceWifi: string;
       priceOther: string;
       photoDormitory: File | null;
+      another :string;
     }[]
   );
 
@@ -91,6 +94,7 @@ export default function FromSell() {
         priceWater: "",
         priceWifi: "",
         priceOther: "",
+        another : "",
         photoDormitory: null,
         images: [], // ✅ เพิ่มตรงนี้
       }))
@@ -115,6 +119,11 @@ export default function FromSell() {
     } else {
       console.error(`Index ${index} ไม่ถูกต้องใน formDataList`);
     }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
   };
   
 
@@ -186,6 +195,7 @@ export default function FromSell() {
         formData.append(`rooms[${roomIndex}][priceWater]`, room.priceWater);
         formData.append(`rooms[${roomIndex}][priceWifi]`, room.priceWifi);
         formData.append(`rooms[${roomIndex}][priceOther]`, room.priceOther || "0"); // ใส่ค่าเริ่มต้นหากว่าง
+        formData.append(`rooms[${roomIndex}][another]`, room.another);
       
         if (room.images) {
           room.images.forEach((image, imgIndex) => {
@@ -283,9 +293,7 @@ export default function FromSell() {
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
-
            
-                
                  <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
                   <h3 className="text-xl font-semibold mb-4">ชื่อหอพัก</h3>
                    <input
@@ -300,8 +308,34 @@ export default function FromSell() {
                    placeholder="ที่อยู่หอพัก"
                    value={addressDormitory}
                    onChange={(e) => setaddressDormitory(e.target.value)}
-                   className="w-full px-4 py-2 border rounded-lg"
+                   className="w-full px-4 py-2 border rounded-lg mb-2"
                    />
+                   <input
+                   type="text"
+                   placeholder="ระยะถึงมหาลัย"
+                   value={distance}
+                   onChange={(e) => setDistance(e.target.value)}
+                   className="w-full px-4 py-2 border rounded-lg mb-2"
+                   />
+                   {/* ส่วนอัปโหลดรูปภาพ */}
+                   <label className="text-xl font-semibold mb-4 ">อัปโหลดรูปหอพัก</label>
+                   <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full  px-4 py-2 border rounded-lg "
+                    />
+                     {/* แสดงพรีวิวรูปภาพที่อัปโหลด */}
+                     {image && (
+                       <div className="mt-4">
+                       <p className="text-gray-600">พรีวิวรูปภาพ:</p>
+                       <img
+                       src={URL.createObjectURL(image)}
+                       alt="รูปหอพัก"
+                      className="mt-2 w-full h-128 object-cover rounded-lg"
+                       />
+                     </div>
+                    )}
                  </div>
                 
               
@@ -327,75 +361,84 @@ export default function FromSell() {
                 >
                   ลบ
                 </button>
-                <h3 className="text-xl font-semibold mb-4">รายละเอียดห้องพัก #{index + 1}</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="เลขห้องพัก"
-                    value={room.roomNumber}
-                    onChange={(e) => handleFormChange(index, "roomNumber", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="เงินมัดจำ (บาท)"
-                    value={formDataList[index]?.roomDeposit || ""}
-                    onChange={(e) => handleFormChange(index, "roomDeposit", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="รายละเอียดเกี่ยวกับหอพัก"
-                    value={room.dormitoryDetails}
-                    onChange={(e) => handleFormChange(index, "dormitoryDetails", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="ค่าไฟ (บาท)"
-                    value={room.priceElectricity}
-                    onChange={(e) => handleFormChange(index, "priceElectricity", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="ค่าบริการอินเทอร์เน็ต (บาท)"
-                    value={room.priceWifi}
-                    onChange={(e) => handleFormChange(index, "priceWifi", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    placeholder="สิ่งอำนวยความสะดวก"
-                    value={room.facilitiesDormitory}
-                    onChange={(e) => handleFormChange(index, "facilitiesDormitory", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
-                  />
-                   <select
-                    id={`typeDormitory-${index}`}
-                    value={room.typeDormitory}
-                    onChange={(e) => handleFormChange(index, "typeDormitory", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  >
-                    <option value="" disabled>
-                      เลือกประเภทหอพัก
-                    </option>
-                    <option value="หอพักชาย">หอพักชาย</option>
-                    <option value="หอพักหญิง">หอพักหญิง</option>
-                    <option value="หอพักรวม">หอพักรวม</option>
-                    <option value="คอนโด">คอนโด</option>
-                    <option value="บ้านเดี่ยว">บ้านเดี่ยว</option>
-                    <option value="บ้านแฝด">บ้านแฝด</option>
-                  </select>
+                <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 border border-gray-200">
+                 <h3 className="text-2xl font-semibold text-gray-800 mb-4">
+                  รายละเอียดห้องพัก #{index + 1}
+                </h3>
 
-                  <input
-                    type="text"
-                    placeholder="ค่าน้ำ (บาท)"
-                    value={room.priceWater}
-                    onChange={(e) => handleFormChange(index, "priceWater", e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg"
+                <div className="grid grid-cols-2 gap-4">
+                <input
+                   type="text"
+                   placeholder="เลขห้อง"
+                   value={room.roomNumber}
+                   onChange={(e) => handleFormChange(index, "roomNumber", e.target.value)}
+                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
                   />
+                     <input
+                  type="text"
+                  placeholder="ค่าห้อง(บาท)"
+                  value={room.priceWifi}
+                  onChange={(e) => handleFormChange(index, "priceWifi", e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                 />
+                  <input
+                   type="text"
+                   placeholder="รายละเอียดเกี่ยวกับหอพัก"
+                   value={room.dormitoryDetails}
+                   onChange={(e) => handleFormChange(index, "dormitoryDetails", e.target.value)}
+                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  />
+                  <input
+                   type="text"
+                   placeholder="เงินมัดจำ (บาท)"
+                   value={formDataList[index]?.roomDeposit || ""}
+                   onChange={(e) => handleFormChange(index, "roomDeposit", e.target.value)}
+                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  />
+                  <input
+                   type="text"
+                   placeholder="สิ่งอำนวยความสะดวก"
+                   value={room.facilitiesDormitory}
+                   onChange={(e) => handleFormChange(index, "facilitiesDormitory", e.target.value)}
+                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                  /><input
+                  type="text"
+                  placeholder="ค่าไฟ (หน่วย/บาท)"
+                  value={room.priceElectricity}
+                  onChange={(e) => handleFormChange(index, "priceElectricity", e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                />
+                <select
+                  id={`typeDormitory-${index}`}
+                  value={room.typeDormitory}
+                  onChange={(e) => handleFormChange(index, "typeDormitory", e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required>
+                  <option value="" disabled>เลือกประเภทหอพัก</option>
+                  <option value="หอพักชาย">หอพักชาย</option>
+                  <option value="หอพักหญิง">หอพักหญิง</option>
+                  <option value="หอพักรวม">หอพักรวม</option>
+                  <option value="คอนโด">คอนโด</option>
+                  <option value="บ้านเดี่ยว">บ้านเดี่ยว</option>
+                  <option value="บ้านแฝด">บ้านแฝด</option>
+                 </select>
+                  <input
+                  type="text"
+                  placeholder="ค่าน้ำ (หน่วย/บาท)"
+                  value={room.priceWater}
+                  onChange={(e) => handleFormChange(index, "priceWater", e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                 />
+                 <input
+                  type="text"
+                  placeholder="ค่าอื่นๆ เช่น ฟอลนิเจอร์ , ตู้เย็น"
+                  value={room.another}
+                  onChange={(e) => handleFormChange(index, "another", e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                 />
+
+
+                </div>
                   {/* ✅ อัพโหลดรูปภาพ */}
                   <div className="p-4">
                   <div className="flex gap-2 overflow-x-auto">
