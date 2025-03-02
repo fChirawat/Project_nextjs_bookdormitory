@@ -1,4 +1,5 @@
-"use client"; 
+"use client";
+import { profile } from "console";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -80,10 +81,10 @@ export default function AdminDashboard() {
                       {user.role === "usersell" ? "User Seller" : user.role || "User"}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 text-center">
-                      {user.isVerified ? (
-                        <span className="text-green-500">Active</span>
+                      {user.id ? (
+                        <span className="text-green-500">Already</span>
                       ) : (
-                        <span className="text-red-500">Inactive</span>
+                        <span className="text-red-500">Pending</span>
                       )}
                     </td>
                   </tr>
@@ -118,15 +119,16 @@ export default function AdminDashboard() {
                     <td className="border border-gray-300 px-4 py-2 text-center">{user.username || user.name}</td>
                     <td className="border border-gray-300 px-4 py-2 text-center">{user.email}</td>
                     <td className="border border-gray-300 px-4 py-2 text-center">
-                      {user.role === "usersell" ? "User Seller" : user.role || "User Sellers" }
+                      {user.role === "usersell" ? "User Seller" : user.role || "User Sellers"}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 text-center">
-                      {user.isVerified ? (
-                        <span className="text-green-500">Active</span>
+                      {user.id ? (
+                        <span className="text-green-500">Already</span>
                       ) : (
-                        <span className="text-red-500">Inactive</span>
+                        <span className="text-red-500">Pending</span>
                       )}
                     </td>
+
                   </tr>
                 ))
               ) : (
