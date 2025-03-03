@@ -42,8 +42,8 @@ model UserSell {
   email     String       @unique
   phone     String       @unique
   password  String
-  profile   ProfileSell? // Linked to ProfileSell
-  formSells FormSell[] // Linked to FormSell
+  profile   ProfileSell?
+  sellers   Seller[]     // One-to-Many กับ Seller
 
   @@unique([username, email, phone])
 }
@@ -65,25 +65,42 @@ model ProfileSell {
   status        String   @default("pending")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  userSell      UserSell @relation(fields: [userId], references: [id])
+
+  userSell      UserSell @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model FormSell {
-  id                Int      @id @default(autoincrement())
-  userSellId        Int
-  nameDormitory     String
-  typeDormitory     String
-  addressDormitory  String
-  dormitoryDetails  String?
-  facilities        String
-  roomNumber        Int
-  distanceDormitory Float
-  roomDeposit       Float
-  priceMonth        Float
-  priceElectricity  Float
-  priceWater        Float
-  priceWifi         Float
-  priceOther        Float
-  photoDormitory    String?
-  userSell          UserSell @relation(fields: [userSellId], references: [id]) // Linked back to UserSell
+model Seller {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  title            String?
+  firstName        String
+  lastName         String
+  phoneNumber      String   @unique
+  email            String   @unique
+  bank             String
+  accountNumber    String
+  nameroom         String
+  addressDormitory String
+  distance         String
+  photoMain        String   @default("")
+
+  userSell         UserSell @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rooms            Room[]   // One-to-Many เชื่อมกับ Room
+}
+
+model Room {
+  id                  Int     @id @default(autoincrement())
+  sellerId            Int
+  roomNumber          String
+  roomType            String
+  roomDetail          String
+  amenities           String
+  deposit             Float
+  electricityCost     Float
+  waterCost           Float
+  roomPrice           Float
+  anotherCost         Float
+  photoDormitory      String
+
+  seller              Seller  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
