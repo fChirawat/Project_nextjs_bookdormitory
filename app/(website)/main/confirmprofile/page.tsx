@@ -4,21 +4,22 @@ import Navconf from "@/components/Navconf";
 import { useState, useEffect } from "react";
 
 export default function ConfirmProfile() {
+  const [userId, setUserId] = useState<number | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [idCardImage, setIdCardImage] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
   const [username, setUsername] = useState("กำลังโหลด...");
-  const [title, setTitle] = useState<string>("นาย");
-  const [firstname, setFirstname] = useState<string>("");
-  const [lastname, setLastname] = useState<string>("");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [relationship, setRelationship] = useState<string>("");
-  const [phoneRelationship, setPhoneRelationship] = useState<string>("");
-  const [contactInfo, setContactInfo] = useState<string>("");
-  const [userId, setUserId] = useState<number | null>(null);
-  const [address, setAddress] = useState<string>("");
+  const [email, setEmail] = useState("กำลังโหลด...");
+  const [phoneNumber, setPhoneNumber] = useState("กำลังโหลด...");
+  const [address, setAddress] = useState("");
+  const [bank, setBank] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [phoneRelationship, setPhoneRelationship] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+  const [relationship, setRelationship] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function ConfirmProfile() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch("/api/users", {
+        const response = await fetch("/api/user", {
           method: "GET",
           credentials: "include",
         });
@@ -38,7 +39,6 @@ export default function ConfirmProfile() {
         }
 
         const data = await response.json();
-
 
         if (data.success) {
           setUserId(data.user.id || null);
@@ -52,6 +52,7 @@ export default function ConfirmProfile() {
         setError("Error fetching user data");
       }
     };
+
     fetchUserData();
   }, []);
 
@@ -66,6 +67,7 @@ export default function ConfirmProfile() {
     const reader = new FileReader();
     reader.onload = async () => {
       const base64Image = reader.result as string;
+
       try {
         const response = await fetch("/api/upload", {
           method: "POST",
@@ -73,9 +75,13 @@ export default function ConfirmProfile() {
           body: JSON.stringify({ image: base64Image, folder }),
         });
 
-        if (!response.ok) throw new Error("Upload failed");
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+          throw new Error(errorData.error || "Upload failed");
+        }
+
         const data = await response.json();
-        setImage(data.imageUrl);
+        setImage(data.imageUrl); // ✅ Save Cloudinary URL
       } catch (error) {
         console.error("Upload error:", error);
         alert("Failed to upload image.");
@@ -86,48 +92,45 @@ export default function ConfirmProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      !userId ||
-      firstname.trim() === "" ||
-      lastname.trim() === "" ||
-      address.trim() === "" ||
-      accountNumber.trim() === "" ||
-      !idCardImage
-    ) {
-      alert("❗ กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
+
+    // 🔹 Ensure required fields are filled
+    if (!userId || !firstname || !lastname || !address || !bank || !accountNumber || !idCardImage) {
+      alert("กรุณากรอกข้อมูลให้ครบทุกช่องที่จำเป็น!");
       return;
     }
-  
+
+    // 🔹 Prepare FormData payload
     const formData = new FormData();
     formData.append("userId", String(userId));
     formData.append("title", title);
-    formData.append("firstName", firstname.trim());
-    formData.append("lastName", lastname.trim());
+    formData.append("firstName", firstname);
+    formData.append("lastName", lastname);
     formData.append("username", username);
-    formData.append("email", email.trim());
-    formData.append("phoneNumber", phoneNumber.trim());
-    formData.append("phoneRelationship", phoneRelationship.trim());
-    formData.append("relationship", relationship.trim());
-    formData.append("contactInfo", contactInfo.trim());
-    formData.append("address", address.trim());
-    formData.append("accountNumber", accountNumber.trim());
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
+    formData.append("address", address);
+    formData.append("bank", bank);
+    formData.append("accountNumber", accountNumber);
+    formData.append("phoneRelationship", phoneRelationship);
+    formData.append("relationship", relationship);
+    formData.append("contactInfo", contactInfo);
     formData.append("status", "pending");
-  
+    // 🔹 Append images if available
     if (profileImage) {
-      const response = await fetch(profileImage);
-      formData.append("profileImage", await response.blob(), "profile.jpg");
+      const profileFile = await fetch(profileImage).then((res) => res.blob());
+      formData.append("profileImage", profileFile, "profile.jpg");
     }
     if (idCardImage) {
-      const response = await fetch(idCardImage);
-      formData.append("photoIdCard", await response.blob(), "idcard.jpg");
+      const idCardFile = await fetch(idCardImage).then((res) => res.blob());
+      formData.append("photoIdCard", idCardFile, "idcard.jpg");
     }
-  
+
     try {
       const response = await fetch("/api/profile", {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         let errorData;
         try {
@@ -137,13 +140,13 @@ export default function ConfirmProfile() {
         }
         throw new Error(errorData.error || "เกิดข้อผิดพลาดในการส่งข้อมูล");
       }
-      alert("✅ ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
-    } catch (error: any) {
+      alert("ส่งข้อมูลยืนยันตัวตนสำเร็จ!");
+    } catch (error) {
       console.error("Profile submission error:", error);
-      alert("❌ Error submitting profile: " + error.message);
+      alert("Error submitting profile: " + error.message);
     }
   };
-  
+
 
 
   return (
@@ -153,6 +156,7 @@ export default function ConfirmProfile() {
         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">ยืนยันตัวตน</h2>
           <form onSubmit={handleSubmit}>
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
             {isClient && (
               <div className="flex flex-col items-center mb-4">
                 <label className="text-gray-700 font-medium mb-2">อัปโหลดรูปโปรไฟล์</label>
@@ -188,9 +192,10 @@ export default function ConfirmProfile() {
 
             <input type="text" value={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="ชื่อจริง" className="w-full p-2 border rounded-lg mb-2" required />
             <input type="text" value={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="นามสกุล" className="w-full p-2 border rounded-lg mb-2" required />
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 border rounded-lg mb-2" />
-            <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="เบอร์โทรศัพท์" className="w-full p-2 border rounded-lg mb-2" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 border rounded-lg mb-2"readOnly />
+            <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="เบอร์โทรศัพท์" className="w-full p-2 border rounded-lg mb-2" readOnly/>
             <textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="ที่อยู่" className="w-full p-2 border rounded-lg mb-2" required />
+            <input type="text" value={bank} onChange={(e) => setBank(e.target.value)} placeholder="ธนาคาร" className="w-full p-2 border rounded-lg mb-2" required />
             <input type="text" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value)} placeholder="หมายเลขบัญชี" className="w-full p-2 border rounded-lg mb-2" required />
             <input type="text" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} placeholder="Facebook / Line" className="w-full p-2 border rounded-lg mb-2" required />
             <input type="text" value={phoneRelationship} onChange={(e) => setPhoneRelationship(e.target.value)} placeholder="เบอร์โทรผู้ติดต่อ" className="w-full p-2 border rounded-lg mb-2" required />

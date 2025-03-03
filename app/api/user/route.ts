@@ -34,7 +34,7 @@ export async function GET(req: Request) {
     }
 
     // ดึงข้อมูลผู้ใช้จากฐานข้อมูล
-    const user = await prisma.userSell.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
         id: true,
